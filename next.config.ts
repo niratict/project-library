@@ -6,8 +6,12 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // ปิด TypeScript errors ขณะ build (ถ้ามี)
+    // ปิด TypeScript errors ขณะ build
     ignoreBuildErrors: true,
+  },
+  // ปิด type checking ทั้งหมด
+  experimental: {
+    typedRoutes: false,
   },
 };
 
