@@ -130,6 +130,12 @@ export default function ReturnManagementPage() {
     isProcessing: false,
   });
 
+  // Format datetime for display
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleString("th-TH");
+  };
+
   // Define filter fields for SearchFilter component
   const filterFields = [
     {
@@ -609,21 +615,19 @@ export default function ReturnManagementPage() {
             <h2 className="text-xl text-white font-bold">{totalFines}฿</h2>
           </div>
         </div>
-
         {/* Return Table */}
         <div className="mt-6 bg-white rounded-lg shadow overflow-x-auto">
           <table className="min-w-full table-auto text-sm">
             <thead className="bg-gray-100 text-left text-gray-600">
               <tr>
-                <th className="py-3 px-4">ลำดับ</th>
-                <th className="py-3 px-4">ชื่อหนังสือ</th>
-                <th className="py-3 px-4">ผู้ยืม</th>
-                <th className="py-3 px-4">วันที่ยืม</th>
-                <th className="py-3 px-4">กำหนดคืน</th>
-                <th className="py-3 px-4">วันที่คืน</th>
-                <th className="py-3 px-4">ค่าปรับ</th>
-                <th className="py-3 px-4">สถานะ</th>
-                <th className="py-3 px-4 text-right">การจัดการ</th>
+                <th className="py-3 px-4 w-16">ลำดับ</th>
+                <th className="py-3 px-4 w-1/4 min-w-[200px]">ชื่อหนังสือ</th>
+                <th className="py-3 px-4 w-32">ผู้ยืม</th>
+                <th className="py-3 px-4 w-32">วันที่ยืม</th>
+                <th className="py-3 px-4 w-32">กำหนดคืน</th>
+                <th className="py-3 px-4 w-24">ค่าปรับ</th>
+                <th className="py-3 px-4 w-24">สถานะ</th>
+                <th className="py-3 px-4 w-40 text-right">การจัดการ</th>
               </tr>
             </thead>
             <tbody>
@@ -639,92 +643,130 @@ export default function ReturnManagementPage() {
                       key={record.borrow_transactions_id}
                       className="border-b hover:bg-gray-50"
                     >
-                      <td className="py-3 px-4">{index + 1}</td>
+                      <td className="py-3 px-4 text-center">{index + 1}</td>
                       <td className="py-3 px-4 font-medium text-gray-900">
-                        {record.title}
-                      </td>
-                      <td className="py-3 px-4">{record.returner}</td>
-                      <td className="py-3 px-4">
-                        {formatDateDMY(record.borrow_date)}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={
-                            isOverdue ? "text-red-600 font-semibold" : ""
-                          }
+                        <div
+                          className="truncate max-w-[200px]"
+                          title={record.title}
                         >
-                          {formatDateDMY(record.due_date)}
-                        </span>
+                          {record.title}
+                        </div>
                       </td>
                       <td className="py-3 px-4">
-                        {record.return_date
-                          ? formatDateDMY(record.return_date)
-                          : "-"}
+                        <div
+                          className="truncate max-w-[120px]"
+                          title={record.returner}
+                        >
+                          {record.returner}
+                        </div>
                       </td>
-                      <td className="py-3 px-4">
-                        {record.fine > 0 ? (
-                          <span className="text-red-500 font-semibold">
-                            {record.fine} บาท
+                      <td className="py-3 px-4 text-sm">
+                        <div className="flex flex-col">
+                          <span>{formatDateDMY(record.borrow_date)}</span>
+                          <span className="text-gray-500 text-xs">
+                            {new Date(record.borrow_date).toLocaleTimeString(
+                              "th-TH",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-sm">
+                        <div className="flex flex-col">
+                          <span
+                            className={
+                              isOverdue ? "text-red-600 font-semibold" : ""
+                            }
+                          >
+                            {formatDateDMY(record.due_date)}
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              isOverdue ? "text-red-500" : "text-gray-500"
+                            }`}
+                          >
+                            {new Date(record.due_date).toLocaleTimeString(
+                              "th-TH",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {record.fine > 0 ? (
+                          <div className="flex flex-col">
+                            <span className="text-red-500 font-semibold">
+                              {record.fine}
+                            </span>
+                            <span className="text-xs text-gray-500">บาท</span>
+                          </div>
                         ) : (
-                          <span className="text-green-500 font-medium">
+                          <span className="text-green-500 font-medium text-xs">
                             ไม่มีค่าปรับ
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 text-center">
                         {isReturned ? (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded-full">
                             คืนแล้ว
                           </span>
                         ) : isOverdue ? (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-red-500 rounded">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-red-500 rounded-full">
                             เกินกำหนด
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-yellow-500 rounded">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-yellow-500 rounded-full">
                             ยังไม่คืน
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-right space-x-2">
-                        <button
-                          onClick={() => {
-                            setSelectedReturn(record);
-                            setShowDetailModal(true);
-                          }}
-                          className="text-sm border px-2 py-1 text-blue-600 rounded hover:bg-blue-100"
-                        >
-                          ดู
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedReturn(record);
-                            setEditForm({
-                              fine_amount: record.fine.toString(),
-                            });
-                            setShowEditModal(true);
-                          }}
-                          className="text-sm border px-2 py-1 text-yellow-700 rounded hover:bg-yellow-100"
-                        >
-                          แก้ไข
-                        </button>
-                        {!isReturned && (
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex flex-wrap gap-1 justify-end">
                           <button
-                            onClick={() => handleReturnClick(record)}
-                            disabled={loading}
-                            className="text-sm border px-2 py-1 text-green-600 rounded hover:bg-green-100 disabled:opacity-50"
+                            onClick={() => {
+                              setSelectedReturn(record);
+                              setShowDetailModal(true);
+                            }}
+                            className="text-xs border px-2 py-1 text-blue-600 rounded hover:bg-blue-100 transition-colors"
                           >
-                            รับคืน
+                            ดู
                           </button>
-                        )}
-                        <button
-                          onClick={() => handleDeleteClick(record)}
-                          disabled={loading}
-                          className="text-sm border px-2 py-1 text-red-600 rounded hover:bg-red-100 disabled:opacity-50"
-                        >
-                          ลบ
-                        </button>
+                          <button
+                            onClick={() => {
+                              setSelectedReturn(record);
+                              setEditForm({
+                                fine_amount: record.fine.toString(),
+                              });
+                              setShowEditModal(true);
+                            }}
+                            className="text-xs border px-2 py-1 text-yellow-700 rounded hover:bg-yellow-100 transition-colors"
+                          >
+                            แก้ไข
+                          </button>
+                          {!isReturned && (
+                            <button
+                              onClick={() => handleReturnClick(record)}
+                              disabled={loading}
+                              className="text-xs border px-2 py-1 text-green-600 rounded hover:bg-green-100 disabled:opacity-50 transition-colors"
+                            >
+                              รับคืน
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteClick(record)}
+                            disabled={loading}
+                            className="text-xs border px-2 py-1 text-red-600 rounded hover:bg-red-100 disabled:opacity-50 transition-colors"
+                          >
+                            ลบ
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -848,14 +890,14 @@ export default function ReturnManagementPage() {
                 <div>
                   <p className="text-sm font-bold text-gray-700">วันที่ยืม</p>
                   <p className="text-sm text-gray-900">
-                    {formatDateDMY(selectedReturn.borrow_date)}
+                    {formatDateTime(selectedReturn.borrow_date)}
                   </p>
                 </div>
 
                 <div>
                   <p className="text-sm font-bold text-gray-700">กำหนดคืน</p>
                   <p className="text-sm text-gray-900">
-                    {formatDateDMY(selectedReturn.due_date)}
+                    {formatDateTime(selectedReturn.due_date)}
                   </p>
                 </div>
 
@@ -904,19 +946,6 @@ export default function ReturnManagementPage() {
                   </div>
                 )}
 
-                {!selectedReturn.return_date && (
-                  <button
-                    onClick={() => {
-                      setShowDetailModal(false);
-                      handleReturnClick(selectedReturn);
-                    }}
-                    disabled={loading}
-                    className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                  >
-                    รับคืนหนังสือ
-                  </button>
-                )}
-
                 <div>
                   <p className="text-sm font-bold text-gray-700">สถานะ</p>
                   <p className="text-sm">
@@ -949,12 +978,12 @@ export default function ReturnManagementPage() {
                   <button
                     onClick={() => {
                       setShowDetailModal(false);
-                      handleReturnBook(selectedReturn);
+                      handleReturnClick(selectedReturn);
                     }}
                     disabled={loading}
                     className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                   >
-                    {loading ? "กำลังคืน..." : "รับคืนหนังสือ"}
+                    รับคืนหนังสือ
                   </button>
                 )}
 

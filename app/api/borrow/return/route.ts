@@ -1,45 +1,74 @@
 // =============================================================================
 // /api/borrow/return/route.ts - สำหรับการคืนหนังสือ
 // =============================================================================
-import { NextRequest, NextResponse } from 'next/server';
-import { getConnection } from '@/lib/db';
-import sql from 'mssql';
+import { NextRequest, NextResponse } from "next/server";
+import { getConnection } from "@/lib/db";
+import sql from "mssql";
+
+// ฟังก์ชันจัดการเวลาไทยใหม่ - ให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
+const getCurrentThaiTime = () => {
+  const now = new Date();
+  // เพิ่ม 7 ชั่วโมงเพื่อให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
+  const thaiTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  return thaiTime;
+};
+
+const formatThaiDateTimeForDisplay = (date: Date) => {
+  // สำหรับแสดงผลใน frontend (YYYY-MM-DD HH:mm:ss)
+  return date.toISOString().replace("T", " ").substring(0, 19);
+};
+
+// Helper function สำหรับแปลงเวลาจาก Database - แก้ไขแล้ว
+function formatDatabaseDateTime(dateFromDB: Date): string {
+  if (!dateFromDB) return "";
+
+  // เนื่องจากเวลาในฐานข้อมูลเป็นเวลาไทยอยู่แล้ว (บันทึกด้วย getCurrentThaiTime())
+  // เราจึงไม่ต้องเพิ่ม +7 ชั่วโมงอีก แค่แปลงรูปแบบเท่านั้น
+  return dateFromDB.toISOString().replace("T", " ").substring(0, 19);
+}
 
 // POST /api/borrow/return - คืนหนังสือ
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { 
-      borrow_transaction_id,
-      staff_id,
-      fine_amount = 0,
-    } = body;
+    const { borrow_transaction_id, staff_id, fine_amount = 0 } = body;
 
     // Validation
     if (!borrow_transaction_id || !staff_id) {
-      return NextResponse.json({ 
-        error: 'กรุณาระบุข้อมูลที่จำเป็น (borrow_transaction_id, staff_id)' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "กรุณาระบุข้อมูลที่จำเป็น (borrow_transaction_id, staff_id)",
+        },
+        { status: 400 }
+      );
     }
 
     const pool = await getConnection();
+    const thaiTime = getCurrentThaiTime();
 
     // ตรวจสอบว่า staff มีอยู่และยังใช้งานได้
-    const staffCheck = await pool.request()
-      .input('staff_id', sql.Int, parseInt(staff_id))
-      .query(`
+    const staffCheck = await pool
+      .request()
+      .input("staff_id", sql.Int, parseInt(staff_id)).query(`
         SELECT staff_id, status, name 
         FROM staffs 
         WHERE staff_id = @staff_id AND deleted_at IS NULL
       `);
-    
-    if (staffCheck.recordset.length === 0 || staffCheck.recordset[0].status !== 'active') {
-      return NextResponse.json({ error: 'ไม่พบเจ้าหน้าที่หรือบัญชีไม่สามารถใช้งานได้' }, { status: 400 });
+
+    if (
+      staffCheck.recordset.length === 0 ||
+      staffCheck.recordset[0].status !== "active"
+    ) {
+      return NextResponse.json(
+        { error: "ไม่พบเจ้าหน้าที่หรือบัญชีไม่สามารถใช้งานได้" },
+        { status: 400 }
+      );
     }
 
     // ตรวจสอบการยืม
-    const borrowCheck = await pool.request()
-      .input('borrow_transaction_id', sql.Int, parseInt(borrow_transaction_id))
+    const borrowCheck = await pool
+      .request()
+      .input("borrow_transaction_id", sql.Int, parseInt(borrow_transaction_id))
       .query(`
         SELECT 
           bt.borrow_transactions_id,
@@ -66,7 +95,10 @@ export async function POST(req: NextRequest) {
       `);
 
     if (borrowCheck.recordset.length === 0) {
-      return NextResponse.json({ error: 'ไม่พบการยืมนี้หรือได้คืนแล้ว' }, { status: 404 });
+      return NextResponse.json(
+        { error: "ไม่พบการยืมนี้หรือได้คืนแล้ว" },
+        { status: 404 }
+      );
     }
 
     const borrowRecord = borrowCheck.recordset[0];
@@ -77,12 +109,16 @@ export async function POST(req: NextRequest) {
 
     try {
       // อัปเดตการคืนหนังสือ
-      await transaction.request()
-        .input('borrow_transaction_id', sql.Int, parseInt(borrow_transaction_id))
-        .input('return_date', sql.Date, new Date())
-        .input('fine', sql.Decimal(10, 2), parseFloat(fine_amount))
-        .input('updated_at', sql.DateTime, new Date())
-        .query(`
+      await transaction
+        .request()
+        .input(
+          "borrow_transaction_id",
+          sql.Int,
+          parseInt(borrow_transaction_id)
+        )
+        .input("return_date", sql.DateTime, thaiTime)
+        .input("fine", sql.Decimal(10, 2), parseFloat(fine_amount))
+        .input("updated_at", sql.DateTime, thaiTime).query(`
           UPDATE borrow_transactions 
           SET return_date = @return_date,
               fine = @fine,
@@ -91,10 +127,10 @@ export async function POST(req: NextRequest) {
         `);
 
       // คืนสถานะหนังสือ
-      await transaction.request()
-        .input('book_copies_id', sql.Int, borrowRecord.book_copies_id)
-        .input('updated_at', sql.DateTime, new Date())
-        .query(`
+      await transaction
+        .request()
+        .input("book_copies_id", sql.Int, borrowRecord.book_copies_id)
+        .input("updated_at", sql.DateTime, thaiTime).query(`
           UPDATE book_copies 
           SET status = 'available', updated_at = @updated_at
           WHERE book_copies_id = @book_copies_id
@@ -102,28 +138,33 @@ export async function POST(req: NextRequest) {
 
       await transaction.commit();
 
-      return NextResponse.json({ 
-        message: 'คืนหนังสือสำเร็จ',
+      return NextResponse.json({
+        message: "คืนหนังสือสำเร็จ",
         data: {
           book_title: borrowRecord.title,
           user_name: borrowRecord.user_name,
-          borrow_date: borrowRecord.borrow_date,
-          due_date: borrowRecord.due_date,
-          return_date: new Date().toISOString().split('T')[0],
+          borrow_date: borrowRecord.borrow_date
+            ? formatDatabaseDateTime(borrowRecord.borrow_date)
+            : null,
+          due_date: borrowRecord.due_date
+            ? formatDatabaseDateTime(borrowRecord.due_date)
+            : null,
+          return_date: formatThaiDateTimeForDisplay(thaiTime),
           overdue_days: borrowRecord.overdue_days,
           fine_amount: parseFloat(fine_amount),
-          staff_name: staffCheck.recordset[0].name
-        }
+          staff_name: staffCheck.recordset[0].name,
+        },
       });
-
     } catch (error) {
       await transaction.rollback();
       throw error;
     }
-
   } catch (err: unknown) {
-    console.error('POST /api/borrow/return ERROR:', err);
-    return NextResponse.json({ error: 'เกิดข้อผิดพลาดในการคืนหนังสือ' }, { status: 500 });
+    console.error("POST /api/borrow/return ERROR:", err);
+    return NextResponse.json(
+      { error: "เกิดข้อผิดพลาดในการคืนหนังสือ" },
+      { status: 500 }
+    );
   }
 }
 
@@ -157,9 +198,25 @@ export async function GET() {
       ORDER BY bt.borrow_transactions_id DESC
     `);
 
-    return NextResponse.json(result.recordset);
+    // แปลงรูปแบบเวลาสำหรับแสดงผล - ใช้ฟังก์ชันที่แก้ไขแล้ว
+    const formattedData = result.recordset.map((row) => ({
+      ...row,
+      borrow_date: row.borrow_date
+        ? formatDatabaseDateTime(row.borrow_date)
+        : null,
+      due_date: row.due_date ? formatDatabaseDateTime(row.due_date) : null,
+      return_date: row.return_date
+        ? formatDatabaseDateTime(row.return_date)
+        : null,
+    }));
+
+    return NextResponse.json(formattedData);
   } catch (err) {
-    console.error('GET /api/borrow/return ERROR:', err);
-    return NextResponse.json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' }, { status: 500 });
+    console.error("GET /api/borrow/return ERROR:", err);
+    return NextResponse.json(
+      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
+      { status: 500 }
+    );
   }
 }
+

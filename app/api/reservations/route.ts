@@ -3,24 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getConnection } from "@/lib/db";
 import sql from "mssql";
 
-// ฟังก์ชันจัดการเวลาไทยใหม่ - เรียบง่ายและถูกต้อง
+// ฟังก์ชันจัดการเวลาไทยใหม่ - ให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
 const getCurrentThaiTime = () => {
   const now = new Date();
-  // เพิ่ม 7 ชั่วโมงเพื่อให้ได้เวลาไทย
+  // เพิ่ม 7 ชั่วโมงเพื่อให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
   const thaiTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
   return thaiTime;
 };
 
 const formatThaiDateTime = (date: Date) => {
-  // แปลงเป็นเวลาไทยแล้วแสดงผล
-  const thaiTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-  return thaiTime.toISOString().replace("T", " ").substring(0, 19);
+  // แสดงเวลาไทยในรูปแบบ YYYY-MM-DD HH:mm:ss
+  return date.toISOString().replace("T", " ").substring(0, 19);
 };
 
 const formatThaiDateTimeForDisplay = (date: Date) => {
-  // สำหรับแสดงผลใน frontend
-  const thaiTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-  return thaiTime.toISOString();
+  // สำหรับแสดงผลใน frontend (YYYY-MM-DD HH:mm:ss)
+  return date.toISOString().replace("T", " ").substring(0, 19);
 };
 
 // POST /api/reservations - สร้างการจองหนังสือใหม่
@@ -169,14 +167,14 @@ export async function POST(req: NextRequest) {
     await transaction.begin();
 
     try {
-      // ใช้เวลา UTC สำหรับบันทึกในฐานข้อมูล
-      const currentTime = new Date();
+      // ใช้เวลาไทยสำหรับบันทึกในฐานข้อมูล
+      const currentThaiTime = getCurrentThaiTime();
 
       await transaction
         .request()
         .input("user_id", sql.Int, parseInt(user_id))
         .input("book_copies_id", sql.Int, bookCopyId)
-        .input("created_at", sql.DateTime, currentTime).query(`
+        .input("created_at", sql.DateTime, currentThaiTime).query(`
           INSERT INTO borrow_transactions (
             user_id, book_copies_id, staff_id, borrow_date, due_date, created_at
           )
@@ -189,7 +187,7 @@ export async function POST(req: NextRequest) {
       await transaction
         .request()
         .input("book_copies_id", sql.Int, bookCopyId)
-        .input("updated_at", sql.DateTime, currentTime).query(`
+        .input("updated_at", sql.DateTime, currentThaiTime).query(`
           UPDATE book_copies 
           SET status = 'reservations', updated_at = @updated_at
           WHERE book_copies_id = @book_copies_id
@@ -197,18 +195,17 @@ export async function POST(req: NextRequest) {
 
       await transaction.commit();
 
-      // คำนวณเวลาหมดอายุ (24 ชั่วโมงจากเวลาปัจจุบัน)
-      const expiresAt = new Date(currentTime.getTime() + 24 * 60 * 60 * 1000);
-      const currentThaiTime = getCurrentThaiTime();
+      // คำนวณเวลาหมดอายุ (24 ชั่วโมงจากเวลาไทย)
+      const expiresAt = new Date(
+        currentThaiTime.getTime() + 24 * 60 * 60 * 1000
+      );
 
       return NextResponse.json({
         message: "จองหนังสือสำเร็จ",
         data: {
           book_title: book.title,
-          reservation_time: formatThaiDateTimeForDisplay(currentTime),
-          reservation_time_thai: formatThaiDateTime(currentTime),
+          reservation_time: formatThaiDateTimeForDisplay(currentThaiTime),
           expires_at: formatThaiDateTimeForDisplay(expiresAt),
-          expires_at_thai: formatThaiDateTime(expiresAt),
           current_thai_time: formatThaiDateTimeForDisplay(currentThaiTime),
           note: "กรุณามารับหนังสือภายใน 24 ชั่วโมง",
         },
@@ -248,7 +245,7 @@ export async function GET(req: NextRequest) {
       inputs.push({ name: "user_id", type: sql.Int, value: parseInt(user_id) });
     }
 
-    const currentTime = new Date();
+    const currentThaiTime = getCurrentThaiTime();
 
     const query = `
       SELECT 
@@ -282,7 +279,7 @@ export async function GET(req: NextRequest) {
       .request()
       .input("offset", sql.Int, offset)
       .input("limit", sql.Int, limit)
-      .input("current_time", sql.DateTime, currentTime);
+      .input("current_time", sql.DateTime, currentThaiTime);
 
     inputs.forEach((input) => {
       request.input(input.name, input.type, input.value);
@@ -294,7 +291,7 @@ export async function GET(req: NextRequest) {
     const processedData = result.recordset.map((row) => {
       const reservationTime = new Date(row.reservation_date);
       const expiresTime = new Date(row.expires_at);
-      const currentDateTime = new Date();
+      const currentDateTime = getCurrentThaiTime();
 
       // คำนวณเวลาที่ผ่านไป (เป็นนาที)
       const minutesPassed = Math.floor(
@@ -310,12 +307,9 @@ export async function GET(req: NextRequest) {
 
       return {
         ...row,
-        reservation_date_thai: formatThaiDateTime(reservationTime),
-        expires_at_thai: formatThaiDateTime(expiresTime),
-        current_thai_time: formatThaiDateTime(currentDateTime),
-        reservation_date_iso: formatThaiDateTimeForDisplay(reservationTime),
-        expires_at_iso: formatThaiDateTimeForDisplay(expiresTime),
-        current_thai_time_iso: formatThaiDateTimeForDisplay(currentDateTime),
+        reservation_date: formatThaiDateTimeForDisplay(reservationTime),
+        expires_at: formatThaiDateTimeForDisplay(expiresTime),
+        current_thai_time: formatThaiDateTimeForDisplay(currentDateTime),
         accurate_hours_passed: hoursPassed,
         accurate_minutes_passed: remainingMinutes,
         hours_left: hoursLeft,
@@ -336,7 +330,7 @@ export async function GET(req: NextRequest) {
 
     const countRequest = pool
       .request()
-      .input("current_time", sql.DateTime, currentTime);
+      .input("current_time", sql.DateTime, currentThaiTime);
 
     inputs.forEach((input) => {
       countRequest.input(input.name, input.type, input.value);
@@ -354,8 +348,7 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
       server_info: {
-        current_thai_time: formatThaiDateTime(currentTime),
-        current_thai_time_iso: formatThaiDateTimeForDisplay(currentTime),
+        current_thai_time: formatThaiDateTimeForDisplay(currentThaiTime),
         timezone: "Asia/Bangkok (UTC+7)",
       },
     });
@@ -417,13 +410,13 @@ export async function DELETE(req: NextRequest) {
     await transaction.begin();
 
     try {
-      const currentTime = new Date();
+      const currentThaiTime = getCurrentThaiTime();
 
       // ยกเลิกการจอง (soft delete)
       await transaction
         .request()
         .input("reservation_id", sql.Int, parseInt(reservation_id))
-        .input("deleted_at", sql.DateTime, currentTime).query(`
+        .input("deleted_at", sql.DateTime, currentThaiTime).query(`
           UPDATE borrow_transactions 
           SET deleted_at = @deleted_at
           WHERE borrow_transactions_id = @reservation_id
@@ -433,7 +426,7 @@ export async function DELETE(req: NextRequest) {
       await transaction
         .request()
         .input("book_copies_id", sql.Int, reservation.book_copies_id)
-        .input("updated_at", sql.DateTime, currentTime).query(`
+        .input("updated_at", sql.DateTime, currentThaiTime).query(`
           UPDATE book_copies 
           SET status = 'available', updated_at = @updated_at
           WHERE book_copies_id = @book_copies_id
@@ -445,8 +438,7 @@ export async function DELETE(req: NextRequest) {
         message: "ยกเลิกการจองสำเร็จ",
         data: {
           book_title: reservation.title,
-          cancelled_at: formatThaiDateTimeForDisplay(currentTime),
-          cancelled_at_thai: formatThaiDateTime(currentTime),
+          cancelled_at: formatThaiDateTimeForDisplay(currentThaiTime),
         },
       });
     } catch (error) {

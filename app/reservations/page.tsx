@@ -17,9 +17,7 @@ interface Reservation {
   isbn: string;
   book_image?: string;
   reservation_date: string;
-  reservation_date_thai: string;
   expires_at: string;
-  expires_at_thai: string;
   status: "active" | "expired";
   hours_left: number;
   minutes_left: number;
@@ -383,10 +381,10 @@ export default function ReservationsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {formatDate(reservation.reservation_date_thai)}
+                          {formatDate(reservation.reservation_date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {formatDate(reservation.expires_at_thai)}
+                          {formatDate(reservation.expires_at)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <div

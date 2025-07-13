@@ -5,12 +5,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { getConnection } from "@/lib/db";
 import sql from "mssql";
 
-// Helper function สำหรับสร้างเวลาประเทศไทย
-function getThaiDateTime(): Date {
+// ฟังก์ชันจัดการเวลาไทยใหม่ - ให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
+const getCurrentThaiTime = () => {
   const now = new Date();
-  // แปลงเป็นเวลาไทย (UTC+7)
+  // เพิ่ม 7 ชั่วโมงเพื่อให้ได้เวลาไทยสำหรับบันทึกในฐานข้อมูล
   const thaiTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
   return thaiTime;
+};
+
+const formatThaiDateTime = (date: Date) => {
+  // แสดงเวลาไทยในรูปแบบ YYYY-MM-DD HH:mm:ss
+  return date.toISOString().replace("T", " ").substring(0, 19);
+};
+
+const formatThaiDateTimeForDisplay = (date: Date) => {
+  // สำหรับแสดงผลใน frontend (YYYY-MM-DD HH:mm:ss)
+  return date.toISOString().replace("T", " ").substring(0, 19);
+};
+
+// Helper function สำหรับแปลงเวลาจาก Database - แก้ไขแล้ว
+function formatDatabaseDateTime(dateFromDB: Date): string {
+  if (!dateFromDB) return "";
+
+  // เนื่องจากเวลาในฐานข้อมูลเป็นเวลาไทยอยู่แล้ว (บันทึกด้วย getCurrentThaiTime())
+  // เราจึงไม่ต้องเพิ่ม +7 ชั่วโมงอีก แค่แปลงรูปแบบเท่านั้น
+  return dateFromDB.toISOString().replace("T", " ").substring(0, 19);
 }
 
 // POST /api/borrow - ยืนยันการยืมจากการจอง
@@ -98,7 +117,7 @@ export async function POST(req: NextRequest) {
     }
 
     // คำนวณวันที่ยืมและกำหนดคืน (เวลาไทย)
-    const borrowDate = getThaiDateTime();
+    const borrowDate = getCurrentThaiTime();
     const dueDate = new Date(borrowDate);
     dueDate.setDate(borrowDate.getDate() + parseInt(borrow_days));
 
@@ -118,7 +137,7 @@ export async function POST(req: NextRequest) {
         .input("borrow_date", sql.DateTime, borrowDate)
         .input("due_date", sql.DateTime, dueDate)
         .input("staff_id", sql.Int, parseInt(staff_id))
-        .input("updated_at", sql.DateTime, getThaiDateTime()).query(`
+        .input("updated_at", sql.DateTime, getCurrentThaiTime()).query(`
           UPDATE borrow_transactions 
           SET borrow_date = @borrow_date,
               due_date = @due_date,
@@ -131,7 +150,7 @@ export async function POST(req: NextRequest) {
       await transaction
         .request()
         .input("book_copies_id", sql.Int, reservation.book_copies_id)
-        .input("updated_at", sql.DateTime, getThaiDateTime()).query(`
+        .input("updated_at", sql.DateTime, getCurrentThaiTime()).query(`
           UPDATE book_copies 
           SET status = 'borrowed', updated_at = @updated_at
           WHERE book_copies_id = @book_copies_id
@@ -144,8 +163,8 @@ export async function POST(req: NextRequest) {
         data: {
           book_title: reservation.title,
           user_name: reservation.user_name,
-          borrow_date: borrowDate.toISOString(),
-          due_date: dueDate.toISOString(),
+          borrow_date: formatThaiDateTimeForDisplay(borrowDate),
+          due_date: formatThaiDateTimeForDisplay(dueDate),
           borrow_days: borrow_days,
           staff_name: staffCheck.recordset[0].name,
         },
@@ -258,8 +277,20 @@ export async function GET(req: NextRequest) {
     const countResult = await countRequest.query(countQuery);
     const total = countResult.recordset[0].total;
 
+    // แปลงรูปแบบเวลาสำหรับแสดงผล - ใช้ฟังก์ชันที่แก้ไขแล้ว
+    const formattedData = result.recordset.map((row) => ({
+      ...row,
+      borrow_date: row.borrow_date
+        ? formatDatabaseDateTime(row.borrow_date)
+        : null,
+      due_date: row.due_date ? formatDatabaseDateTime(row.due_date) : null,
+      return_date: row.return_date
+        ? formatDatabaseDateTime(row.return_date)
+        : null,
+    }));
+
     return NextResponse.json({
-      data: result.recordset,
+      data: formattedData,
       pagination: {
         page,
         limit,

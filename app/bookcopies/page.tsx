@@ -33,7 +33,7 @@ interface Book {
   title: string;
   author: string;
   book_limit: number;
-  status: string; // เปลี่ยนจาก boolean เป็น string
+  status: string;
 }
 
 interface FilterValues {
@@ -171,7 +171,6 @@ export default function BookCopiesManagementPage() {
 
   const fetchBooks = async () => {
     try {
-      // เรียกใช้ API ที่ถูกต้องตาม route.ts ที่ 2
       const res = await fetch("/api/books");
 
       if (!res.ok) {
@@ -183,9 +182,7 @@ export default function BookCopiesManagementPage() {
       const data = await res.json();
       console.log("Books API Response:", data);
 
-      // ปรับให้ตรงกับโครงสร้างที่ API ส่งกลับมา
       if (data && Array.isArray(data.data)) {
-        // กรองเฉพาะหนังสือที่มีสถานะ active
         setBooks(data.data.filter((book: Book) => book.status === "active"));
       } else {
         console.error("Invalid books response format:", data);
@@ -225,7 +222,10 @@ export default function BookCopiesManagementPage() {
         method: "DELETE",
       });
       if (res.ok) {
-        success("ลบสำเนาหนังสือสำเร็จ", "ข้อมูลสำเนาหนังสือถูกลบออกจากระบบแล้ว");
+        success(
+          "ลบสำเนาหนังสือสำเร็จ",
+          "ข้อมูลสำเนาหนังสือถูกลบออกจากระบบแล้ว"
+        );
         fetchBookCopies(pagination.current_page);
         handleDeleteCancel();
       } else {
@@ -505,67 +505,75 @@ export default function BookCopiesManagementPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {filteredBookCopies.map((copy, index) => (
-                        <tr
-                          key={copy.book_copies_id}
-                          className="border-b hover:bg-gray-50 transition-colors duration-150"
-                        >
-                          <td className="py-3 px-4 text-center text-gray-600 font-mono">
-                            {index + 1}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700 font-medium">
-                            {copy.title}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.book_copies_id}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.author}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.category_name || "-"}
-                          </td>
-                          <td className="py-3 px-4">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                                copy.status
-                              )}`}
-                            >
-                              {getStatusLabel(copy.status)}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.shelf_location || "-"}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.borrower_name || "-"}
-                          </td>
-                          <td className="py-3 px-4 text-gray-700">
-                            {copy.due_date
-                              ? new Date(copy.due_date).toLocaleDateString(
-                                  "th-TH"
-                                )
-                              : "-"}
-                          </td>
-                          <td className="text-center">
-                            <button
-                              onClick={() => editBookCopy(copy)}
-                              className="text-blue-600 hover:text-blue-800 mx-1 p-1 rounded transition-colors duration-150"
-                              title="แก้ไข"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(copy)}
-                              className="text-red-500 hover:text-red-700 mx-1 p-1 rounded transition-colors duration-150"
-                              title="ลบ"
-                              disabled={copy.status === "borrowed"}
-                            >
-                              🗑️
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                      {filteredBookCopies.map((copy, index) => {
+                        // สร้าง unique key จากหลายค่า
+                        const uniqueKey = `${copy.book_copies_id}-${copy.book_id}-${index}`;
+
+                        return (
+                          <tr
+                            key={uniqueKey}
+                            className="border-b hover:bg-gray-50 transition-colors duration-150"
+                          >
+                            <td className="py-3 px-4 text-center text-gray-600 font-mono">
+                              {(pagination.current_page - 1) *
+                                pagination.per_page +
+                                index +
+                                1}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700 font-medium">
+                              {copy.title}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.book_copies_id}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.author}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.category_name || "-"}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                                  copy.status
+                                )}`}
+                              >
+                                {getStatusLabel(copy.status)}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.shelf_location || "-"}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.borrower_name || "-"}
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">
+                              {copy.due_date
+                                ? new Date(copy.due_date).toLocaleDateString(
+                                    "th-TH"
+                                  )
+                                : "-"}
+                            </td>
+                            <td className="text-center">
+                              <button
+                                onClick={() => editBookCopy(copy)}
+                                className="text-blue-600 hover:text-blue-800 mx-1 p-1 rounded transition-colors duration-150"
+                                title="แก้ไข"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(copy)}
+                                className="text-red-500 hover:text-red-700 mx-1 p-1 rounded transition-colors duration-150"
+                                title="ลบ"
+                                disabled={copy.status === "borrowed"}
+                              >
+                                🗑️
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -638,7 +646,7 @@ export default function BookCopiesManagementPage() {
             >
               <option value="">เลือกหนังสือ *</option>
               {books.map((book) => (
-                <option key={book.book_id} value={book.book_id}>
+                <option key={`book-${book.book_id}`} value={book.book_id}>
                   {book.title} - {book.author} (จำกัด: {book.book_limit})
                 </option>
               ))}

@@ -565,7 +565,7 @@ export default function BorrowManagementPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      {formatDate(record.borrow_date)}
+                      {formatDateTime(record.borrow_date)}
                       {record.reservation_date && (
                         <div className="text-xs text-gray-500">
                           จอง: {formatDateTime(record.reservation_date)}
@@ -573,7 +573,7 @@ export default function BorrowManagementPage() {
                       )}
                     </td>
                     <td className="py-3 px-4">
-                      {formatDate(record.due_date)}
+                      {formatDateTime(record.due_date)}
                       {record.overdue_days > 0 && (
                         <div className="text-xs text-red-600">
                           เกิน {record.overdue_days} วัน
@@ -907,13 +907,13 @@ export default function BorrowManagementPage() {
                 <div>
                   <p className="text-sm font-medium">วันที่ยืม:</p>
                   <p className="text-sm text-gray-700">
-                    {formatDate(selectedBorrow.borrow_date)}
+                    {formatDateTime(selectedBorrow.borrow_date)}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">กำหนดคืน:</p>
                   <p className="text-sm text-gray-700">
-                    {formatDate(selectedBorrow.due_date)}
+                    {formatDateTime(selectedBorrow.due_date)}
                   </p>
                 </div>
                 {selectedBorrow.staff_name && (

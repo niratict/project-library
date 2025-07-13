@@ -64,6 +64,10 @@ export default function BookSearchPage() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedBookCopies, setSelectedBookCopies] = useState<BookCopy[]>([]);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(9); // จำนวนหนังสือต่อหน้า
+
   // Reservation states
   const [reserving, setReserving] = useState<number | null>(null);
   const [reservationMessage, setReservationMessage] = useState<string | null>(
@@ -88,6 +92,11 @@ export default function BookSearchPage() {
     fetchBookCopies();
     fetchCategories(); // เพิ่มการเรียก API categories
   }, []);
+
+  // Reset to first page when search filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, category, status]);
 
   // เพิ่มฟังก์ชัน fetchCategories
   const fetchCategories = async () => {
@@ -256,6 +265,59 @@ export default function BookSearchPage() {
     return matchesQuery && matchesCategory && matchesStatus;
   });
 
+  // Pagination calculations
+  const totalItems = filteredBooks.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentBooks = filteredBooks.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+    return pages;
+  };
+
   const getBookStatus = (bookId: number) => {
     const bookCopiesForBook = bookCopies.filter(
       (copy) => copy.book_id === bookId
@@ -291,7 +353,7 @@ export default function BookSearchPage() {
       case "maintenance":
         return "ซ่อมบำรุง";
       default:
-        return "ไม่ทราบสถานะ";
+        return "ยังไม่มีสำเนาหนังสือ";
     }
   };
 
@@ -329,8 +391,6 @@ export default function BookSearchPage() {
 
     return true;
   };
-
-  // ลบฟังก์ชัน getUniqueCategories เก่า และใช้ categories จาก API แทน
 
   if (loading) {
     return (
@@ -391,7 +451,6 @@ export default function BookSearchPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
             >
               <option value="">📚 ทุกหมวดหมู่</option>
-              {/* ใช้ categories จาก API แทน */}
               {categories.map((cat) => (
                 <option key={`category-${cat.categorie_id}`} value={cat.name}>
                   {cat.name}
@@ -413,82 +472,225 @@ export default function BookSearchPage() {
         </div>
 
         <div className="mt-6">
-          <p className="text-sm text-gray-600 mb-3">
-            พบ {filteredBooks.length} รายการ
-          </p>
+          {/* Search Results Info and Items Per Page Selector */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-gray-600">
+                พบ {totalItems} รายการ (หน้า {currentPage} จาก {totalPages})
+              </p>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600">แสดง:</label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) =>
+                    handleItemsPerPageChange(Number(e.target.value))
+                  }
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+                >
+                  <option value={6}>6 รายการ</option>
+                  <option value={9}>9 รายการ</option>
+                  <option value={12}>12 รายการ</option>
+                  <option value={18}>18 รายการ</option>
+                  <option value={24}>24 รายการ</option>
+                </select>
+              </div>
+            </div>
+
+            {totalItems > 0 && (
+              <div className="text-sm text-gray-600">
+                แสดง {startIndex + 1}-{Math.min(endIndex, totalItems)} จาก{" "}
+                {totalItems} รายการ
+              </div>
+            )}
+          </div>
+
+          {/* Books Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBooks.map((book) => {
+            {currentBooks.map((book) => {
               const bookStatus = getBookStatus(book.book_id);
               const userCanAccess = canUserAccessBook(book);
 
               return (
                 <div
                   key={`book-${book.book_id}`}
-                  className={`rounded-2xl overflow-hidden shadow-lg bg-white border border-white hover:shadow-4xl hover:shadow-pink-500 transition duration-300 ${
+                  className={`group rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2 ${
                     !userCanAccess ? "opacity-60" : ""
                   }`}
                 >
-                  <div className="h-48 bg-gray-200 flex items-center justify-center text-gray-400 text-4xl">
-                    {book.book_image_full_url || book.book_image ? (
-                      <img
-                        src={book.book_image_full_url || book.book_image}
-                        alt={book.title}
-                        className="object-cover h-full w-full"
-                        onError={(e) => {
-                          // ถ้าโหลดรูปไม่ได้ให้แสดงไอคอน
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = "none";
-                          target.parentElement!.innerHTML =
-                            '<span class="text-4xl">📚</span>';
-                        }}
-                      />
-                    ) : (
-                      <span>📚</span>
-                    )}
-                  </div>
-                  <div className="p-5 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-gray-800">
-                        {book.title}
-                      </h3>
+                  {/* Image Container with Gradient Overlay */}
+                  <div className="relative h-56 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-hidden">
+                    {/* Status Badge */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${getStatusColor(
+                          bookStatus
+                        )} shadow-lg`}
+                      >
+                        {getStatusText(bookStatus)}
+                      </span>
                     </div>
 
-                    <p className="text-gray-500 text-sm">👤 {book.author}</p>
-                    <p className="text-gray-500 text-sm">ISBN: {book.isbn}</p>
+                    {/* Category Badge */}
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-700 backdrop-blur-sm shadow-lg">
+                        {getCategoryName(book)}
+                      </span>
+                    </div>
 
-                    {!userCanAccess && (
-                      <p className="text-red-500 text-xs">
-                        {book.reader_group === "children"
-                          ? "สำหรับสมาชิกประชาชนทั่วไปเท่านั้น"
-                          : "สำหรับสมาชิกสถาบันการศึกษาเท่านั้น"}
-                      </p>
-                    )}
+                    {/* Book Image */}
+                    <div className="h-full w-full flex items-center justify-center p-4">
+                      {book.book_image_full_url || book.book_image ? (
+                        <img
+                          src={book.book_image_full_url || book.book_image}
+                          alt={book.title}
+                          className="max-h-full max-w-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            target.parentElement!.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-gray-400 group-hover:text-purple-400 transition-colors duration-300">
+                      <span class="text-6xl mb-2">📚</span>
+                      <span class="text-sm font-medium">ไม่มีรูปภาพ</span>
+                    </div>
+                  `;
+                          }}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-gray-400 group-hover:text-purple-400 transition-colors duration-300">
+                          <span className="text-6xl mb-2">📚</span>
+                          <span className="text-sm font-medium">
+                            ไม่มีรูปภาพ
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
-                    <div className="flex items-center justify-between text-sm pt-2 mt-4">
-                      <div className="flex gap-2 items-center">
-                        <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                          {getCategoryName(book)}
-                        </span>
-                        <span
-                          className={`text-xs px-2 py-1 rounded font-medium ${getStatusColor(
-                            bookStatus
-                          )}`}
-                        >
-                          {getStatusText(bookStatus)}
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 space-y-4">
+                    {/* Title */}
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                        {book.title}
+                      </h3>
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <span className="flex items-center">
+                          <span className="text-blue-500 mr-1">✍️</span>
+                          <span className="truncate">{book.author}</span>
                         </span>
                       </div>
+                    </div>
+
+                    {/* ISBN */}
+                    <div className="flex items-center text-xs text-gray-500">
+                      <span className="text-green-500 mr-1">📖</span>
+                      <span>ISBN: {book.isbn}</span>
+                    </div>
+
+                    {/* Access Restriction Warning */}
+                    {!userCanAccess && (
+                      <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded-lg">
+                        <span className="text-red-500 mr-2">⚠️</span>
+                        <p className="text-red-600 text-xs">
+                          {book.reader_group === "children"
+                            ? "สำหรับสมาชิกประชาชนทั่วไปเท่านั้น"
+                            : "สำหรับสมาชิกสถาบันการศึกษาเท่านั้น"}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action Button */}
+                    <div className="pt-2">
                       <button
                         onClick={() => handleBookSelect(book)}
-                        className="bg-gradient-to-r from-blue-500 to-blue-200 text-white shadow px-8 py-2 rounded-full hover:from-purple-300 hover:to-pink-200 transition-colors duration-300"
+                        className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
                       >
-                        รายละเอียด
+                        <span className="flex items-center justify-center space-x-2">
+                          <span>📋</span>
+                          <span>ดูรายละเอียด</span>
+                        </span>
                       </button>
                     </div>
                   </div>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full transform translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform duration-500"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-blue-400/10 to-purple-400/10 rounded-full transform -translate-x-6 translate-y-6 group-hover:scale-150 transition-transform duration-500"></div>
                 </div>
               );
             })}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-8 gap-4">
+              {/* Previous Button */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                  currentPage === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white text-gray-700 hover:bg-purple-50 hover:text-purple-600 border border-gray-300"
+                }`}
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">ก่อนหน้า</span>
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-2">
+                {getPageNumbers().map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      typeof page === "number" && handlePageChange(page)
+                    }
+                    disabled={page === "..."}
+                    className={`w-10 h-10 rounded-lg font-medium transition-colors duration-200 ${
+                      page === currentPage
+                        ? "bg-purple-500 text-white shadow-lg"
+                        : page === "..."
+                        ? "text-gray-400 cursor-default"
+                        : "bg-white text-gray-700 hover:bg-purple-50 hover:text-purple-600 border border-gray-300"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                  currentPage === totalPages
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white text-gray-700 hover:bg-purple-50 hover:text-purple-600 border border-gray-300"
+                }`}
+              >
+                <span className="hidden sm:inline">ถัดไป</span>
+                <span>→</span>
+              </button>
+            </div>
+          )}
+
+          {/* No Results Message */}
+          {totalItems === 0 && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📚</div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                ไม่พบหนังสือที่ค้นหา
+              </h3>
+              <p className="text-gray-500">
+                ลองปรับเปลี่ยนคำค้นหา หรือเลือกหมวดหมู่อื่น
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -521,7 +723,6 @@ export default function BookSearchPage() {
                       alt={selectedBook.title}
                       className="w-48 h-72 object-contain rounded shadow-lg"
                       onError={(e) => {
-                        // ถ้าโหลดรูปไม่ได้ให้แสดงไอคอน
                         const target = e.target as HTMLImageElement;
                         target.style.display = "none";
                         target.parentElement!.innerHTML =
