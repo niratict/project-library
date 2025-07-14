@@ -22,9 +22,9 @@ export default function HomePage() {
 
         {/* Features Section */}
         <div className="grid grid-cols-1 mt-10">
-          <div className="bg-white rounded-lg shadow p-6 hover:bg-blue-50">
+          <div className="bg-white rounded-lg shadow p-6 hover:bg-blue-50 shadow-xl shadow-purple-500 ">
             <Link href="/search">
-            <div className="text-4xl text-blue-600 mb-2 text-center">🔍</div>
+            <div className="text-4xl text-blue-600 mb-2 text-center ">🔍</div>
             <h2 className="text-lg font-semibold text-center">ค้นหาหนังสือ</h2>
             <p className="text-sm text-gray-500 text-center">
               ค้นหาหนังสือจากคลังที่มีหนังสือมากมาย ด้วยระบบค้นหาที่รวดเร็วและแม่นยำ
@@ -34,7 +34,7 @@ export default function HomePage() {
         </div>
 
         {/* Login Section */}
-        <div className="bg-white rounded-lg shadow p-6 mt-10 text-left">
+        <div className="bg-white rounded-lg shadow p-6 mt-10 text-left shadow-xl shadow-pink-500 ">
           <h2 className="text-lg font-bold text-gray-800 mb-4 text-center">เข้าใช้งานระบบ</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="border border-blue-400 rounded-lg p-6">

@@ -145,7 +145,7 @@ export default function AdminDashboard() {
           {/* Summary Cards - เรียงตามลำดับที่ต้องการ */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* 1. หนังสือทั้งหมด */}
-            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-xl hover:shadow-green-500 p-6 transform hover:scale-105 transition-transform duration-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-blue-100 font-medium">
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* 2. หมวดหมู่ */}
-            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
+            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-xl hover:shadow-orange-500 p-6 transform hover:scale-105 transition-transform duration-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-100 font-medium">
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* 3. หนังสือที่ยืม */}
-            <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl shadow-xl hover:shadow-blue-500 p-6 transform hover:scale-105 transition-transform duration-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-orange-100 font-medium">
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* 4. สมาชิกทั้งหมด */}
-            <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
+            <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-xl hover:shadow-purple-500 p-6 transform hover:scale-105 transition-transform duration-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-green-100 font-medium">
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
           <div className="mt-8">
             {/* Row 1: User and Staff Management - 2 columns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400">
                 <div className="text-4xl text-green-600 mb-3">👥</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการสมาชิก
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
                   </button>
                 </Link>
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center transition-shadow duration-200 shadow-xl shadow-cyan-400">
                 <div className="text-4xl text-emerald-600 mb-3">👨‍💼</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการพนักงาน
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
 
             {/* Row 2: Category, Book, and Book Copies Management - 3 columns */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-purple-600 mb-3">🏷️</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการหมวดหมู่
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                   </button>
                 </Link>
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-blue-600 mb-3">📚</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการหนังสือ
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
                   </button>
                 </Link>
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-indigo-600 mb-3">📄</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการสำเนาหนังสือ
@@ -297,7 +297,7 @@ export default function AdminDashboard() {
 
             {/* Row 3: Borrow, Return, and Reports - 3 columns */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-orange-500 mb-3">📤</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการการยืม
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                   </button>
                 </Link>
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-red-500 mb-3">📥</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   จัดการการคืน
@@ -325,7 +325,7 @@ export default function AdminDashboard() {
                   </button>
                 </Link>
               </div>
-              <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-200">
+              <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400 transition-shadow duration-200">
                 <div className="text-4xl text-purple-400 mb-3">📊</div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   รายงาน

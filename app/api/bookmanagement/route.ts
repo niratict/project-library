@@ -1,40 +1,94 @@
+// route.ts (หลัก - สำหรับ GET และ POST)
 import { NextRequest, NextResponse } from "next/server";
 import { getConnection } from "@/lib/db";
 import sql from "mssql";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { existsSync } from "fs";
+import { v2 as cloudinary } from "cloudinary";
 
-// Helper function สำหรับอัปโหลดรูปภาพ
-async function uploadImage(file: File): Promise<string> {
+// กำหนดค่า Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Helper function สำหรับอัปโหลดรูปภาพไปยัง Cloudinary
+async function uploadImageToCloudinary(file: File): Promise<string> {
   try {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // สร้างชื่อไฟล์ที่ไม่ซ้ำกัน
-    const timestamp = Date.now();
-    const originalName = file.name;
-    const extension = path.extname(originalName);
-    const fileName = `book_${timestamp}${extension}`;
+    // สร้าง Promise สำหรับอัปโหลดไฟล์
+    const uploadPromise = new Promise<string>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            resource_type: "image",
+            folder: "library/books", // โฟลเดอร์ใน Cloudinary
+            public_id: `book_${Date.now()}`, // ตั้งชื่อไฟล์ไม่ให้ซ้ำกัน
+            transformation: [
+              { width: 800, height: 1200, crop: "limit" }, // จำกัดขนาดรูปภาพ
+              { quality: "auto" }, // ปรับคุณภาพอัตโนมัติ
+              { format: "auto" }, // เลือกรูปแบบไฟล์ที่เหมาะสม
+            ],
+          },
+          (error, result) => {
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              reject(error);
+            } else if (result) {
+              resolve(result.secure_url);
+            } else {
+              reject(new Error("ไม่สามารถอัปโหลดรูปภาพได้"));
+            }
+          }
+        )
+        .end(buffer);
+    });
 
-    // สร้างเส้นทางสำหรับเก็บไฟล์
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "books");
-
-    // ตรวจสอบและสร้างโฟลเดอร์ถ้าไม่มี
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadDir, fileName);
-
-    // เขียนไฟล์ลงในระบบ
-    await writeFile(filePath, buffer);
-
-    // ส่งคืน URL ที่สามารถเข้าถึงได้
-    return `/uploads/books/${fileName}`;
+    return await uploadPromise;
   } catch (error) {
-    console.error("Error uploading image:", error);
+    console.error("Error uploading image to Cloudinary:", error);
     throw new Error("ไม่สามารถอัปโหลดรูปภาพได้");
+  }
+}
+
+// Helper function สำหรับลบรูปภาพจาก Cloudinary
+async function deleteImageFromCloudinary(imageUrl: string): Promise<void> {
+  try {
+    // ดึง public_id จาก URL
+    const publicId = extractPublicIdFromUrl(imageUrl);
+    if (publicId) {
+      await cloudinary.uploader.destroy(publicId);
+    }
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+    // ไม่ throw error เพื่อไม่ให้ขัดขวางการอัปเดตข้อมูล
+  }
+}
+
+// Helper function สำหรับดึง public_id จาก Cloudinary URL
+function extractPublicIdFromUrl(url: string): string | null {
+  try {
+    const matches = url.match(/\/([^\/]+)\.(jpg|jpeg|png|gif|webp)$/);
+    if (matches && matches[1]) {
+      // ถ้ามี folder ใน public_id
+      const pathParts = url.split("/");
+      const fileNameWithExtension = pathParts[pathParts.length - 1];
+      const fileName = fileNameWithExtension.split(".")[0];
+
+      // หาตำแหน่งของโฟลเดอร์
+      const folderIndex = pathParts.findIndex((part) => part === "library");
+      if (folderIndex !== -1) {
+        const folderPath = pathParts.slice(folderIndex, -1).join("/");
+        return `${folderPath}/${fileName}`;
+      }
+
+      return fileName;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error extracting public_id:", error);
+    return null;
   }
 }
 
@@ -131,7 +185,7 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        book_image_url = await uploadImage(imageFile);
+        book_image_url = await uploadImageToCloudinary(imageFile);
       } catch (error) {
         return NextResponse.json(
           { error: "ไม่สามารถอัปโหลดรูปภาพได้" },
@@ -229,14 +283,10 @@ export async function GET() {
       ORDER BY b.created_at DESC
     `);
 
-    // เพิ่ม full URL สำหรับรูปภาพ
+    // เนื่องจากใช้ Cloudinary แล้ว book_image จะเป็น URL เต็มอยู่แล้ว
     const booksWithImageUrl = result.recordset.map((book) => ({
       ...book,
-      book_image_full_url: book.book_image
-        ? `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}${
-            book.book_image
-          }`
-        : null,
+      book_image_full_url: book.book_image, // ใช้ URL จาก Cloudinary โดยตรง
     }));
 
     return NextResponse.json(booksWithImageUrl);
