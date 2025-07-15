@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import DeleteConfirmModal from "@/app/components/DeleteConfirmModal";
 import { useToast } from "@/app/hooks/useToast";
 import { ToastContainer } from "@/app/components/Toast";
+import CustomDropdown from "@/app/components/CustomDropdown";
 
 interface Book {
   book_id: number;
@@ -535,6 +536,7 @@ export default function BookManagementPage() {
             initialValues={searchFilters}
             onFilterChange={handleFilterChange}
             resultCount={filteredBooks.length}
+            className="mb-8 shadow-xl shadow-cyan-400"
           />
 
           {/* Content Area */}
@@ -564,7 +566,7 @@ export default function BookManagementPage() {
             </div>
           ) : (
             // Table
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-xl shadow-xl shadow-cyan-400 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full table-auto text-sm text-left">
                   <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
@@ -777,23 +779,18 @@ export default function BookManagementPage() {
                 <label className="block text-sm font-medium text-gray-700">
                   หมวดหมู่ <span className="text-red-500">*</span>
                 </label>
-                <select
+                <CustomDropdown
+                  options={categories}
                   value={form.categorie_id}
-                  onChange={(e) =>
-                    setForm({ ...form, categorie_id: e.target.value })
+                  onChange={(value) =>
+                    setForm({ ...form, categorie_id: value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">เลือกหมวดหมู่</option>
-                  {categories.map((category) => (
-                    <option
-                      key={category.categorie_id}
-                      value={category.categorie_id}
-                    >
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="เลือกหมวดหมู่"
+                  optionKey="categorie_id"
+                  optionLabel="name"
+                  searchable={true}
+                  zIndex={9999}
+                />
               </div>
 
               {/* คำอธิบาย */}
@@ -852,20 +849,17 @@ export default function BookManagementPage() {
                   <label className="block text-sm font-medium text-gray-700">
                     ภาษา
                   </label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { value: "Thai", label: "ไทย" },
+                      { value: "English", label: "อังกฤษ" },
+                      { value: "Chinese", label: "จีน" },
+                    ]}
                     value={form.language}
-                    onChange={(e) =>
-                      setForm({ ...form, language: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Thai">ไทย</option>
-                    <option value="English">อังกฤษ</option>
-                    <option value="Chinese">จีน</option>
-                    <option value="Japanese">ญี่ปุ่น</option>
-                    <option value="Korean">เกาหลี</option>
-                    <option value="Other">อื่นๆ</option>
-                  </select>
+                    onChange={(value) => setForm({ ...form, language: value })}
+                    placeholder="เลือกภาษา"
+                    zIndex={9999}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
@@ -890,33 +884,34 @@ export default function BookManagementPage() {
                   <label className="block text-sm font-medium text-gray-700">
                     กลุ่มผู้อ่าน <span className="text-red-500">*</span>
                   </label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { value: "children", label: "เด็ก" },
+                      { value: "adults", label: "ผู้ใหญ่" },
+                      { value: "education", label: "บุคลากรทางการศึกษา" },
+                    ]}
                     value={form.reader_group}
-                    onChange={(e) =>
-                      setForm({ ...form, reader_group: e.target.value })
+                    onChange={(value) =>
+                      setForm({ ...form, reader_group: value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="children">เด็ก</option>
-                    <option value="teens">วัยรุ่น</option>
-                    <option value="adults">ผู้ใหญ่</option>
-                    <option value="all">ทุกกลุ่มอายุ</option>
-                  </select>
+                    placeholder="เลือกกลุ่มผู้อ่าน"
+                    zIndex={9999}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     สถานะ
                   </label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { value: "active", label: "ใช้งาน" },
+                      { value: "inactive", label: "ไม่ใช้งาน" },
+                    ]}
                     value={form.status}
-                    onChange={(e) =>
-                      setForm({ ...form, status: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="active">ใช้งาน</option>
-                    <option value="inactive">ไม่ใช้งาน</option>
-                  </select>
+                    onChange={(value) => setForm({ ...form, status: value })}
+                    placeholder="เลือกสถานะ"
+                    zIndex={9999}
+                  />
                 </div>
               </div>
 
@@ -928,7 +923,7 @@ export default function BookManagementPage() {
                     setShowForm(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="text-gray-600 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
                   disabled={isUploading}
                 >
                   ยกเลิก
@@ -937,7 +932,7 @@ export default function BookManagementPage() {
                   type="button"
                   onClick={saveBook}
                   disabled={isUploading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700"
                 >
                   {isUploading ? (
                     <>

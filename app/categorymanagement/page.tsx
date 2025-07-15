@@ -304,7 +304,7 @@ export default function CategoryManagementPage() {
           initialValues={filterValues}
           onFilterChange={handleFilterChange}
           resultCount={filteredCategories.length}
-          className="mb-8"
+          className="mb-8 shadow-xl shadow-cyan-400"
         />
 
         {/* Loading State */}
@@ -315,7 +315,7 @@ export default function CategoryManagementPage() {
         ) : (
           <>
             {/* Data Table */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-8 overflow-x-auto">
+            <div className="bg-white rounded-xl p-6 mt-8 overflow-x-auto shadow-xl shadow-cyan-400">
               <table className="min-w-full table-auto text-sm text-left">
                 <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
                   <tr>
@@ -380,11 +380,12 @@ export default function CategoryManagementPage() {
       {/* Add/Edit Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
             <h3 className="text-lg font-bold mb-4">
               {isEditing ? "แก้ไขหมวดหมู่" : "เพิ่มหมวดหมู่ใหม่"}
             </h3>
-            <div className="space-y-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {isEditing && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -394,18 +395,19 @@ export default function CategoryManagementPage() {
                     type="text"
                     value={form.categorie_id}
                     disabled
-                    className="w-full border border-gray-300 px-3 py-2 rounded bg-gray-100 text-gray-500"
+                    className="w-full border border-gray-300 px-3 py-2 rounded-md bg-gray-100 text-gray-500"
                   />
                 </div>
               )}
-              <div>
+
+              <div className={isEditing ? "" : "md:col-span-2"}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ชื่อหมวดหมู่ <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="กรุณาระบุชื่อหมวดหมู่"
-                  className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   maxLength={100}
@@ -415,16 +417,17 @@ export default function CategoryManagementPage() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end space-x-3 mt-6">
+
+            <div className="flex justify-end space-x-4 mt-6">
               <button
                 onClick={closeForm}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded hover:bg-gray-50"
+                className="text-gray-600 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={saveCategory}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {isEditing ? "บันทึกการแก้ไข" : "เพิ่มหมวดหมู่"}
               </button>

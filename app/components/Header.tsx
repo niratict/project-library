@@ -212,8 +212,9 @@ export default function Header() {
   return (
     <header className="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 ">
           {/* Logo */}
+          <div className="bg-gray-200 bg-opacity-8 rounded-xl pt-7 mr-2">
           <button
             onClick={handleLogoClick}
             className="cursor-pointer flex-shrink-0"
@@ -224,6 +225,7 @@ export default function Header() {
               className="h-[60px] sm:h-[80px] w-auto hover:opacity-80 transition-opacity"
             />
           </button>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6 text-sm font-medium">
@@ -232,25 +234,25 @@ export default function Header() {
               <>
                 <Link
                   href="/dashboard"
-                  className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                  className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20  hover:bg-opacity-10"
                 >
                   หน้าแรก
                 </Link>
                 <Link
                   href="/search"
-                  className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                  className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                 >
                   ค้นหาหนังสือ
                 </Link>
                 <Link
                   href="/reservations"
-                  className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                  className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                 >
                   ประวัติการจอง
                 </Link>
                 <Link
                   href="/borrow"
-                  className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                  className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                 >
                   ประวัติการยืม
                 </Link>
@@ -263,7 +265,7 @@ export default function Header() {
                 {authUser.data.user_type === "admin" && (
                   <Link
                     href="/admindashboard"
-                    className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                    className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                   >
                     Admin Dashboard
                   </Link>
@@ -271,14 +273,14 @@ export default function Header() {
                 {authUser.data.user_type === "librarian" && (
                   <Link
                     href="/admindashboard"
-                    className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                    className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                   >
                     Librarian Dashboard
                   </Link>
                 )}
                 <Link
                   href="/search"
-                  className="hover:text-gray-200 transition-colors px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-10"
+                  className=" transition-colors px-3 py-2 rounded-md hover:bg-white/20 hover:bg-opacity-10"
                 >
                   ค้นหาหนังสือ
                 </Link>
@@ -342,7 +344,7 @@ export default function Header() {
           <div className="md:hidden mobile-menu-container">
             <button
               onClick={handleMobileMenuToggle}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-black hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors"
               aria-expanded="false"
             >
               <span className="sr-only">เปิดเมนูหลัก</span>
@@ -385,14 +387,14 @@ export default function Header() {
         {/* Mobile Menu */}
         {showMobileMenu && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white bg-opacity-10 rounded-lg mt-2 mb-4">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white bg-opacity-95 rounded-lg mt-2 mb-4 shadow-lg backdrop-blur-sm">
               {/* Mobile User Info */}
               {authUser && (
-                <div className="px-3 py-2 border-b border-white border-opacity-20 mb-2">
-                  <p className="text-sm font-semibold">
+                <div className="px-3 py-2 border-b border-gray-300 mb-2">
+                  <p className="text-sm font-semibold text-gray-800">
                     {getUserDisplayName()}
                   </p>
-                  <p className="text-xs text-gray-200">{getUserTypeLabel()}</p>
+                  <p className="text-xs text-gray-600">{getUserTypeLabel()}</p>
                 </div>
               )}
 
@@ -401,28 +403,28 @@ export default function Header() {
                 <>
                   <Link
                     href="/dashboard"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     หน้าแรก
                   </Link>
                   <Link
                     href="/search"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     ค้นหาหนังสือ
                   </Link>
                   <Link
                     href="/reservations"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     ประวัติการจอง
                   </Link>
                   <Link
                     href="/borrow"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     ประวัติการยืม
@@ -434,7 +436,7 @@ export default function Header() {
                 <>
                   <Link
                     href="/admindashboard"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     {authUser.data.user_type === "admin"
@@ -443,7 +445,7 @@ export default function Header() {
                   </Link>
                   <Link
                     href="/search"
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-white hover:bg-opacity-10 transition-colors"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-purple-100 hover:text-purple-800 transition-colors"
                     onClick={handleMobileMenuClose}
                   >
                     ค้นหาหนังสือ
@@ -477,7 +479,7 @@ export default function Header() {
               {authUser && (
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-red-500 hover:bg-opacity-20 text-red-200 transition-colors"
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
                 >
                   🚪 ออกจากระบบ
                 </button>

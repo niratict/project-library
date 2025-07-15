@@ -151,12 +151,9 @@ export default function AdminDashboard() {
                   <p className="text-sm text-blue-100 font-medium">
                     หนังสือทั้งหมด
                   </p>
-                  <h2 className="text-2xl text-white font-bold mt-1">
+                  <h2 className="text-4xl text-white font-bold mt-4">
                     {formatNumber(stats.total_books)}
                   </h2>
-                  <p className="text-xs text-blue-100 mt-1">
-                    +{getRandomChange().value}% จากเดือนที่แล้ว
-                  </p>
                 </div>
                 <div className="text-3xl text-blue-200">📚</div>
               </div>
@@ -169,12 +166,9 @@ export default function AdminDashboard() {
                   <p className="text-sm text-purple-100 font-medium">
                     หมวดหมู่
                   </p>
-                  <h2 className="text-2xl text-white font-bold mt-1">
+                  <h2 className="text-4xl text-white font-bold mt-4">
                     {formatNumber(totalCategories)}
                   </h2>
-                  <p className="text-xs text-purple-100 mt-1">
-                    หมวดหมู่หนังสือทั้งหมด
-                  </p>
                 </div>
                 <div className="text-3xl text-purple-200">🏷️</div>
               </div>
@@ -187,12 +181,9 @@ export default function AdminDashboard() {
                   <p className="text-sm text-orange-100 font-medium">
                     หนังสือที่ยืม
                   </p>
-                  <h2 className="text-2xl text-white font-bold mt-1">
+                  <h2 className="text-4xl text-white font-bold mt-4">
                     {formatNumber(stats.current_borrows)}
                   </h2>
-                  <p className="text-xs text-orange-100 mt-1">
-                    +{getRandomChange().value}% จากสัปดาห์ที่แล้ว
-                  </p>
                 </div>
                 <div className="text-3xl text-orange-200">📤</div>
               </div>
@@ -205,12 +196,9 @@ export default function AdminDashboard() {
                   <p className="text-sm text-green-100 font-medium">
                     สมาชิกทั้งหมด
                   </p>
-                  <h2 className="text-2xl text-white font-bold mt-1">
+                  <h2 className="text-4xl text-white font-bold mt-4">
                     {formatNumber(stats.total_users)}
                   </h2>
-                  <p className="text-xs text-green-100 mt-1">
-                    +{getRandomChange().value}% จากเดือนที่แล้ว
-                  </p>
                 </div>
                 <div className="text-3xl text-green-200">👥</div>
               </div>
@@ -223,12 +211,12 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-white rounded-xl p-6 text-center shadow-xl shadow-cyan-400">
                 <div className="text-4xl text-green-600 mb-3">👥</div>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2 ">
                   จัดการสมาชิก
                 </h2>
                 <p className="text-sm text-gray-600 mb-4">จัดการข้อมูลสมาชิก</p>
                 <Link href="/usersmanagement">
-                  <button className="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการสมาชิก
                   </button>
                 </Link>
@@ -242,7 +230,7 @@ export default function AdminDashboard() {
                   จัดการข้อมูลพนักงาน
                 </p>
                 <Link href="/staffmanagement">
-                  <button className="px-6 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการพนักงาน
                   </button>
                 </Link>
@@ -260,7 +248,7 @@ export default function AdminDashboard() {
                   เพิ่ม แก้ไข ลบ หมวดหมู่หนังสือ
                 </p>
                 <Link href="/categorymanagement">
-                  <button className="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการหมวดหมู่
                   </button>
                 </Link>
@@ -274,7 +262,7 @@ export default function AdminDashboard() {
                   เพิ่ม แก้ไข ลบ ดูรายละเอียดหนังสือ
                 </p>
                 <Link href="/bookmanagement">
-                  <button className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการหนังสือ
                   </button>
                 </Link>
@@ -288,7 +276,7 @@ export default function AdminDashboard() {
                   เพิ่ม แก้ไข ลบ ดูรายละเอียดสำเนาหนังสือ
                 </p>
                 <Link href="/bookcopies">
-                  <button className="px-6 py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการสำเนาหนังสือ
                   </button>
                 </Link>
@@ -306,7 +294,7 @@ export default function AdminDashboard() {
                   จัดการการยืมหนังสือ
                 </p>
                 <Link href="/borrowmanagement">
-                  <button className="px-6 py-3 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-orange-500 text-white rounded-full hover:bg-orange-600 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการการยืม
                   </button>
                 </Link>
@@ -320,7 +308,7 @@ export default function AdminDashboard() {
                   จัดการการคืนหนังสือและค่าปรับ
                 </p>
                 <Link href="/returnbook">
-                  <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     จัดการการคืน
                   </button>
                 </Link>
@@ -334,7 +322,7 @@ export default function AdminDashboard() {
                   ดูรายงานและสถิติการใช้งาน
                 </p>
                 <Link href="/reports">
-                  <button className="px-6 py-3 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors duration-200 font-medium">
+                  <button className="px-6 py-3 bg-purple-500 text-white rounded-full hover:bg-purple-600 hover:shadow-lg hover:shadow-pink-400 transition-colors duration-200 font-medium">
                     ดูรายงาน
                   </button>
                 </Link>

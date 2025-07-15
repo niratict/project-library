@@ -472,7 +472,7 @@ export default function BorrowManagementPage() {
         )}
 
         {/* Tab Navigation */}
-        <div className="flex space-x-2 bg-white rounded-lg p-2">
+        <div className="flex space-x-2 bg-white rounded-lg p-2 shadow-xl shadow-cyan-400">
           <button
             onClick={() => handleTabChange("borrowed")}
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition ${
@@ -501,35 +501,35 @@ export default function BorrowManagementPage() {
           initialValues={filters}
           onFilterChange={handleFilterChange}
           resultCount={totalRecords}
-          className="mb-6"
+          className="mb-6 shadow-xl shadow-cyan-400"
         />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mt-6">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">รายการทั้งหมด</p>
             <h2 className="text-2xl font-bold text-white">{totalRecords}</h2>
           </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">กำลังยืม</p>
             <h2 className="text-2xl font-bold text-white">{totalBorrowed}</h2>
           </div>
-          <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">เกินกำหนด</p>
             <h2 className="text-2xl font-bold text-white">{totalOverdues}</h2>
           </div>
-          <div className="bg-gradient-to-r from-orange-500 to-orange-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">รายการจอง</p>
             <h2 className="text-2xl font-bold text-white">{totalReserved}</h2>
           </div>
-          <div className="bg-gradient-to-r from-gray-500 to-gray-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-r from-gray-500 to-gray-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">หมดอายุ</p>
             <h2 className="text-2xl font-bold text-white">{totalExpired}</h2>
           </div>
         </div>
 
         {/* Records Table */}
-        <div className="mt-6 bg-white rounded-lg shadow overflow-x-auto">
+        <div className="mt-6 bg-white rounded-lg shadow-xl shadow-cyan-400 overflow-x-auto">
           <table className="min-w-full table-auto text-sm">
             <thead className="bg-gray-100 text-left text-gray-600">
               <tr>

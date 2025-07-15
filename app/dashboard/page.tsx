@@ -110,7 +110,7 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mb-8">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-2xl text-white shadow-xl shadow-blue-500/30 transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-2xl text-white shadow-xl shadow-blue-400 transform hover:scale-105 transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold opacity-90">
@@ -124,7 +124,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-pink-500 to-rose-600 p-6 rounded-2xl text-white shadow-xl shadow-pink-500/30 transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-600 p-6 rounded-2xl text-white shadow-xl shadow-pink-400 transform hover:scale-105 transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold opacity-90">
@@ -146,7 +146,7 @@ export default function DashboardPage() {
           </div>
 
           {/* หนังสือยอดนิยม */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-pink-500/20 p-8 mt-8 border border-white/30">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl shadow-pink-400 p-8 mt-8 border border-white/30">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 🔥 หนังสือยอดนิยม
@@ -161,7 +161,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, index) => (
                   <div key={index} className="animate-pulse">
-                    <div className="bg-gradient-to-tr from-gray-200 to-gray-300 p-[2px] rounded-xl">
+                    <div className="bg-gradient-to-tr from-green-200 to-green-300 p-[2px] rounded-xl">
                       <div className="bg-white rounded-[10px] overflow-hidden">
                         <div className="w-full h-48 bg-gray-300"></div>
                         <div className="p-4 space-y-2">
@@ -198,7 +198,7 @@ export default function DashboardPage() {
                       #{index + 1}
                     </div>
 
-                    <div className="bg-white rounded-[10px] overflow-hidden shadow-sm flex flex-col h-full group-hover:shadow-2xl transition-shadow duration-300">
+                    <div className="bg-white rounded-[10px] overflow-hidden shadow-sm flex flex-col h-full group-hover:shadow-xl hover:shadow-purple-400 transition-shadow duration-300">
                       <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden relative">
                         <img
                           src={

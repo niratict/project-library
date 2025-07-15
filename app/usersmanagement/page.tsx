@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ToastContainer } from "@/app/components/Toast";
 import { useToast } from "@/app/hooks/useToast";
 import DeleteConfirmModal from "@/app/components/DeleteConfirmModal";
+import CustomDropdown from "@/app/components/CustomDropdown";
 
 interface User {
   user_id: number;
@@ -483,11 +484,11 @@ export default function CategoryManagementPage() {
           initialValues={searchFilters}
           onFilterChange={handleFilterChange}
           resultCount={filteredUsers.length}
-          className="mb-6"
+          className="mb-6 shadow-xl shadow-cyan-400"
         />
 
         {/* ตารางแสดงข้อมูลผู้ใช้ */}
-        <div className="bg-white rounded-xl shadow-md p-6 mt-8 overflow-x-auto">
+        <div className="bg-white rounded-xl p-6 mt-8 overflow-x-aut shadow-xl shadow-cyan-400">
           {isLoading ? (
             <div className="flex justify-center items-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
@@ -593,102 +594,171 @@ export default function CategoryManagementPage() {
       {/* Popup เพิ่ม/แก้ไขผู้ใช้ */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold">
-              {isEditing ? "แก้ไขผู้ใช้" : "เพิ่มผู้ใช้ใหม่"}
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold mb-4">
+              {isEditing ? "แก้ไขข้อมูลผู้ใช้" : "เพิ่มผู้ใช้ใหม่"}
             </h3>
-            <input
-              type="text"
-              placeholder="ชื่อ-นามสกุล *"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              disabled={isLoading}
-            />
-            <input
-              type="email"
-              placeholder="อีเมล *"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              disabled={isLoading}
-            />
-            {!isEditing && (
-              <input
-                type="password"
-                placeholder="รหัสผ่าน *"
-                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                disabled={isLoading}
-              />
-            )}
-            <input
-              type="date"
-              placeholder="วันเกิด"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.date_of_birth}
-              onChange={(e) =>
-                setForm({ ...form, date_of_birth: e.target.value })
-              }
-              disabled={isLoading}
-            />
-            <input
-              type="text"
-              placeholder="รหัสบัตรประชาชน 13 หลัก *"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.citizen_id}
-              onChange={(e) => setForm({ ...form, citizen_id: e.target.value })}
-              disabled={isLoading}
-            />
-            <select
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.user_type}
-              onChange={(e) => setForm({ ...form, user_type: e.target.value })}
-              disabled={isLoading}
-            >
-              <option value="citizen">ทั่วไป</option>
-              <option value="educational">สถานศึกษา</option>
-            </select>
-            <select
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.gender}
-              onChange={(e) => setForm({ ...form, gender: e.target.value })}
-              disabled={isLoading}
-            >
-              <option value="">เพศ (ไม่ระบุ)</option>
-              <option value="male">ชาย</option>
-              <option value="female">หญิง</option>
-              <option value="other">อื่นๆ</option>
-            </select>
-            <input
-              type="text"
-              placeholder="เบอร์โทรศัพท์"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              disabled={isLoading}
-            />
-            <input
-              type="text"
-              placeholder="ที่อยู่"
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              disabled={isLoading}
-            />
-            <div className="flex justify-end space-x-2">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ชื่อ-นามสกุล *
+                </label>
+                <input
+                  type="text"
+                  placeholder="ชื่อ-นามสกุล"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  อีเมล *
+                </label>
+                <input
+                  type="email"
+                  placeholder="อีเมล"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+
+              {!isEditing && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    รหัสผ่าน *
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="รหัสผ่าน"
+                    className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={form.password}
+                    onChange={(e) =>
+                      setForm({ ...form, password: e.target.value })
+                    }
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  รหัสบัตรประชาชน *
+                </label>
+                <input
+                  type="text"
+                  placeholder="รหัสบัตรประชาชน 13 หลัก"
+                  maxLength={13}
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.citizen_id}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      citizen_id: e.target.value.replace(/\D/g, ""),
+                    })
+                  }
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ประเภทผู้ใช้ *
+                </label>
+                <CustomDropdown
+                  options={[
+                    { value: "citizen", label: "ทั่วไป" },
+                    { value: "educational", label: "สถานศึกษา" },
+                  ]}
+                  value={form.user_type}
+                  onChange={(value) => setForm({ ...form, user_type: value })}
+                  placeholder="เลือกประเภทผู้ใช้"
+                  disabled={isLoading}
+                  zIndex={1001}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  เพศ
+                </label>
+                <CustomDropdown
+                  options={[
+                    { value: "male", label: "ชาย" },
+                    { value: "female", label: "หญิง" },
+                    { value: "other", label: "อื่นๆ" },
+                  ]}
+                  value={form.gender}
+                  onChange={(value) => setForm({ ...form, gender: value })}
+                  placeholder="เลือกเพศ"
+                  disabled={isLoading}
+                  zIndex={1001}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  วันเกิด
+                </label>
+                <input
+                  type="date"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.date_of_birth}
+                  onChange={(e) =>
+                    setForm({ ...form, date_of_birth: e.target.value })
+                  }
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  เบอร์โทรศัพท์
+                </label>
+                <input
+                  type="tel"
+                  placeholder="เบอร์โทรศัพท์"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ที่อยู่
+                </label>
+                <textarea
+                  placeholder="ที่อยู่"
+                  rows={3}
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.address}
+                  onChange={(e) =>
+                    setForm({ ...form, address: e.target.value })
+                  }
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-4 mt-6">
               <button
                 onClick={handleCloseForm}
-                className="text-gray-600 px-4 py-2 hover:bg-gray-100 rounded disabled:opacity-50"
                 disabled={isLoading}
+                className="text-gray-600 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={saveUser}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 disabled={isLoading}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
                 {isLoading ? (
                   <>

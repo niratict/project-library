@@ -143,7 +143,7 @@ export default function BookSearchPage() {
 
   const fetchBookCopies = async () => {
     try {
-      const response = await fetch("/api/bookcopies");
+      const response = await fetch("/api/bookcopies/all");
       if (!response.ok) {
         throw new Error("Failed to fetch book copies");
       }
@@ -513,7 +513,7 @@ export default function BookSearchPage() {
               return (
                 <div
                   key={`book-${book.book_id}`}
-                  className={`group rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2 ${
+                  className={`group rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-2xl hover:shadow-purple-500 transition-all duration-500 transform hover:-translate-y-2 ${
                     !userCanAccess ? "opacity-60" : ""
                   }`}
                 >
@@ -591,29 +591,29 @@ export default function BookSearchPage() {
                     </div>
 
                     {/* Access Restriction Warning */}
-                    {!userCanAccess && (
-                      <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded-lg">
-                        <span className="text-red-500 mr-2">⚠️</span>
-                        <p className="text-red-600 text-xs">
-                          {book.reader_group === "children"
-                            ? "สำหรับสมาชิกประชาชนทั่วไปเท่านั้น"
-                            : "สำหรับสมาชิกสถาบันการศึกษาเท่านั้น"}
-                        </p>
-                      </div>
-                    )}
+                      {book.reader_group === "education" && !userCanAccess && (
+                        <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded-lg">
+                          <span className="text-red-500 mr-2">⚠️</span>
+                          <p className="text-red-600 text-xs">
+                            หนังสือนี้สงวนไว้สำหรับกลุ่มสมาชิกเฉพาะ (สถาบันการศึกษา)
+                          </p>
+                        </div>
+                      )}
 
                     {/* Action Button */}
-                    <div className="pt-2">
-                      <button
-                        onClick={() => handleBookSelect(book)}
-                        className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
-                      >
-                        <span className="flex items-center justify-center space-x-2">
-                          <span>📋</span>
-                          <span>ดูรายละเอียด</span>
-                        </span>
-                      </button>
-                    </div>
+                    {!(book.reader_group === "education" && !userCanAccess) && (
+                      <div className="pt-2">
+                        <button
+                          onClick={() => handleBookSelect(book)}
+                          className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                        >
+                          <span className="flex items-center justify-center space-x-2">
+                            <span>📋</span>
+                            <span>ดูรายละเอียด</span>
+                          </span>
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Decorative Elements */}
@@ -652,7 +652,7 @@ export default function BookSearchPage() {
                     disabled={page === "..."}
                     className={`w-10 h-10 rounded-lg font-medium transition-colors duration-200 ${
                       page === currentPage
-                        ? "bg-purple-500 text-white shadow-lg"
+                        ? "bg-purple-500 text-white shadow-xl"
                         : page === "..."
                         ? "text-gray-400 cursor-default"
                         : "bg-white text-gray-700 hover:bg-purple-50 hover:text-purple-600 border border-gray-300"

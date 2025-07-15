@@ -593,30 +593,30 @@ export default function ReturnManagementPage() {
           initialValues={filterValues}
           onFilterChange={handleFilterChange}
           resultCount={totalReturns}
-          className="mb-6"
+          className="mb-6 shadow-xl shadow-cyan-400"
         />
 
         {/* Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">รายการทั้งหมด</p>
             <h2 className="text-xl text-white font-bold">{totalReturns}</h2>
           </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">คืนแล้ว</p>
             <h2 className="text-xl text-white font-bold">{returnedBooks}</h2>
           </div>
-          <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">เกินกำหนด</p>
             <h2 className="text-xl text-white font-bold">{overdueBooks}</h2>
           </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg shadow p-4 text-center">
+          <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">ค่าปรับรวม</p>
             <h2 className="text-xl text-white font-bold">{totalFines}฿</h2>
           </div>
         </div>
         {/* Return Table */}
-        <div className="mt-6 bg-white rounded-lg shadow overflow-x-auto">
+        <div className="mt-6 bg-white rounded-lg shadow-xl shadow-cyan-400 overflow-x-auto">
           <table className="min-w-full table-auto text-sm">
             <thead className="bg-gray-100 text-left text-gray-600">
               <tr>

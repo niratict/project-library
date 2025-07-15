@@ -54,7 +54,9 @@ export default function HomePage() {
               <div className="text-3xl text-green-600 mb-2 text-center">🔍</div>
               <h3 className="text-lg font-semibold text-center text-green-800">สำหรับผู้ดูแลระบบ</h3>
               <p className="text-sm text-gray-600 text-center">จัดการหนังสือ สมาชิก และระบบการยืม-คืนหนังสือ</p>
+              <Link href="/login_admin">
               <button className="w-full mt-4 px-4 py-2 bg-green-600 text-white rounded">เข้าสู่ระบบ Admin</button>
+              </Link>
             </div>
           </div>
         </div>

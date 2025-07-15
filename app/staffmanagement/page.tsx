@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ToastContainer } from "@/app/components/Toast";
 import { useToast } from "@/app/hooks/useToast";
 import DeleteConfirmModal from "@/app/components/DeleteConfirmModal";
+import CustomDropdown from "@/app/components/CustomDropdown";
 
 interface Staff {
   staff_id: number;
@@ -415,7 +416,7 @@ export default function StaffManagementPage() {
           initialValues={searchFilters}
           onFilterChange={handleFilterChange}
           resultCount={filteredStaff.length}
-          className="mb-6"
+          className="mb-6 shadow-xl shadow-cyan-400"
         />
 
         {/* Loading Indicator */}
@@ -427,7 +428,7 @@ export default function StaffManagementPage() {
         )}
 
         {/* ตารางแสดงข้อมูลพนักงาน */}
-        <div className="bg-white rounded-xl shadow-md p-6 mt-8 overflow-x-auto">
+        <div className="bg-white rounded-xl shadow-xl shadow-cyan-400 p-6 mt-8 overflow-x-auto">
           <table className="min-w-full table-auto text-sm text-left">
             <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
               <tr>
@@ -598,16 +599,16 @@ export default function StaffManagementPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ประเภทพนักงาน *
                 </label>
-                <select
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <CustomDropdown
+                  options={[
+                    { value: "librarian", label: "บรรณารักษ์" },
+                    { value: "admin", label: "ผู้ดูแลระบบ" },
+                  ]}
                   value={form.user_type}
-                  onChange={(e) =>
-                    setForm({ ...form, user_type: e.target.value })
-                  }
-                >
-                  <option value="librarian">บรรณารักษ์</option>
-                  <option value="admin">ผู้ดูแลระบบ</option>
-                </select>
+                  onChange={(value) => setForm({ ...form, user_type: value })}
+                  placeholder="เลือกประเภทพนักงาน"
+                  zIndex={9999}
+                />
               </div>
 
               <div>
@@ -633,16 +634,17 @@ export default function StaffManagementPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   เพศ
                 </label>
-                <select
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <CustomDropdown
+                  options={[
+                    { value: "male", label: "ชาย" },
+                    { value: "female", label: "หญิง" },
+                    { value: "other", label: "อื่นๆ" },
+                  ]}
                   value={form.gender}
-                  onChange={(e) => setForm({ ...form, gender: e.target.value })}
-                >
-                  <option value="">เลือกเพศ</option>
-                  <option value="male">ชาย</option>
-                  <option value="female">หญิง</option>
-                  <option value="other">อื่นๆ</option>
-                </select>
+                  onChange={(value) => setForm({ ...form, gender: value })}
+                  placeholder="เลือกเพศ"
+                  zIndex={9999}
+                />
               </div>
 
               <div>
@@ -690,15 +692,17 @@ export default function StaffManagementPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   สถานะ
                 </label>
-                <select
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <CustomDropdown
+                  options={[
+                    { value: "active", label: "ใช้งาน" },
+                    { value: "suspended", label: "ระงับ" },
+                    { value: "deleted", label: "ลบแล้ว" },
+                  ]}
                   value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                >
-                  <option value="active">ใช้งาน</option>
-                  <option value="suspended">ระงับ</option>
-                  <option value="deleted">ลบแล้ว</option>
-                </select>
+                  onChange={(value) => setForm({ ...form, status: value })}
+                  placeholder="เลือกสถานะ"
+                  zIndex={9999}
+                />
               </div>
 
               <div className="md:col-span-2">

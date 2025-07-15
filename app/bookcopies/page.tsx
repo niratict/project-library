@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ToastContainer } from "@/app/components/Toast";
 import { useToast } from "@/app/hooks/useToast";
 import DeleteConfirmModal from "@/app/components/DeleteConfirmModal";
+import CustomDropdown from '@/app/components/CustomDropdown';
 
 interface BookCopy {
   book_copies_id: number;
@@ -395,7 +396,6 @@ export default function BookCopiesManagementPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Header />
-
       {/* Main Content */}
       <div className="flex-1 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
@@ -457,6 +457,7 @@ export default function BookCopiesManagementPage() {
             initialValues={searchFilters}
             onFilterChange={handleFilterChange}
             resultCount={filteredBookCopies.length}
+            className="mb-8 shadow-xl shadow-cyan-400"
           />
 
           {/* Content Area */}
@@ -487,7 +488,7 @@ export default function BookCopiesManagementPage() {
           ) : (
             <>
               {/* Table */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-white rounded-xl shadow-xl shadow-cyan-400 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full table-auto text-sm text-left">
                     <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
@@ -626,84 +627,109 @@ export default function BookCopiesManagementPage() {
           )}
         </div>
       </div>
-
-      {/* Popup Form */}
+      import CustomDropdown from './components/CustomDropdown';
+      {/* Popup Form - ใช้ CustomDropdown แทน select */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h3 className="text-lg font-bold">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <h3 className="text-lg font-bold mb-4">
               {isEditing
                 ? `แก้ไขสำเนาหนังสือ #${form.book_copies_id}`
                 : "เพิ่มสำเนาหนังสือใหม่"}
             </h3>
 
-            <select
-              className="w-full border px-3 py-2 rounded"
-              value={form.book_id}
-              onChange={(e) => setForm({ ...form, book_id: e.target.value })}
-              required
-              disabled={isEditing}
-            >
-              <option value="">เลือกหนังสือ *</option>
-              {books.map((book) => (
-                <option key={`book-${book.book_id}`} value={book.book_id}>
-                  {book.title} - {book.author} (จำกัด: {book.book_limit})
-                </option>
-              ))}
-            </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dropdown สำหรับเลือกหนังสือ */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  เลือกหนังสือ *
+                </label>
+                <CustomDropdown
+                  options={books.map((book) => ({
+                    value: book.book_id,
+                    label: `${book.title} - ${book.author} (จำกัด: ${book.book_limit})`,
+                  }))}
+                  value={form.book_id}
+                  onChange={(value) => setForm({ ...form, book_id: value })}
+                  placeholder="เลือกหนังสือ *"
+                  disabled={isEditing}
+                  required={true}
+                  searchable={true}
+                  className="w-full"
+                  zIndex={1000}
+                />
+              </div>
 
-            <select
-              className="w-full border px-3 py-2 rounded"
-              value={form.status}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  status: e.target.value as BookCopy["status"],
-                })
-              }
-            >
-              <option value="available">พร้อมใช้งาน</option>
-              <option value="reservations">ถูกจอง</option>
-              <option value="borrowed">ถูกยืม</option>
-            </select>
+              {/* Dropdown สำหรับเลือกสถานะ */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  สถานะ
+                </label>
+                <CustomDropdown
+                  options={[
+                    { value: "available", label: "พร้อมใช้งาน" },
+                    { value: "reservations", label: "ถูกจอง" },
+                    { value: "borrowed", label: "ถูกยืม" },
+                  ]}
+                  value={form.status}
+                  onChange={(value) => setForm({ ...form, status: value })}
+                  placeholder="เลือกสถานะ"
+                  className="w-full"
+                  zIndex={999}
+                />
+              </div>
 
-            <input
-              type="text"
-              placeholder="ตำแหน่งชั้นหนังสือ (เช่น A1, B2)"
-              className="w-full border px-3 py-2 rounded"
-              value={form.shelf_location}
-              onChange={(e) =>
-                setForm({ ...form, shelf_location: e.target.value })
-              }
-            />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ตำแหน่งชั้นหนังสือ
+                </label>
+                <input
+                  type="text"
+                  placeholder="ตำแหน่งชั้นหนังสือ (เช่น A1, B2)"
+                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.shelf_location}
+                  onChange={(e) =>
+                    setForm({ ...form, shelf_location: e.target.value })
+                  }
+                />
+              </div>
 
-            {!isEditing && (
-              <input
-                type="number"
-                placeholder="จำนวนสำเนาที่ต้องการเพิ่ม"
-                className="w-full border px-3 py-2 rounded"
-                value={form.quantity}
-                onChange={(e) =>
-                  setForm({ ...form, quantity: parseInt(e.target.value) || 1 })
-                }
-                min="1"
-                max="100"
-              />
-            )}
+              {!isEditing && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    จำนวนสำเนาที่ต้องการเพิ่ม
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="จำนวนสำเนาที่ต้องการเพิ่ม"
+                    className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={form.quantity}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        quantity: parseInt(e.target.value) || 1,
+                      })
+                    }
+                    min="1"
+                    max="100"
+                  />
+                </div>
+              )}
+            </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-4 mt-6">
               <button
                 onClick={() => {
                   setShowForm(false);
                   resetForm();
                 }}
-                className="text-gray-600 px-4 py-2"
+                className="text-gray-600 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={saveBookCopy}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-blue-600 hover:to-purple-700"
               >
                 {isEditing ? "อัปเดต" : "บันทึก"}
               </button>
@@ -711,7 +737,6 @@ export default function BookCopiesManagementPage() {
           </div>
         </div>
       )}
-
       <div className="mt-20">
         {/* Toast Container */}
         <ToastContainer toasts={toasts} onRemove={removeToast} />

@@ -426,7 +426,6 @@ async function GET_INVENTORY(req: NextRequest) {
         LEFT JOIN book_copies bc ON b.book_id = bc.book_id AND bc.deleted_at IS NULL
         WHERE b.deleted_at IS NULL
         GROUP BY b.book_id, b.title, b.author, c.name
-        HAVING COUNT(bc.book_copies_id) <= 2
         ORDER BY total_copies ASC
       `);
 

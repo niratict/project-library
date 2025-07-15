@@ -349,7 +349,6 @@ export default function LibraryReportsDashboard() {
 
   useEffect(() => {
     loadAllData();
-    // eslint-disable-next-line
   }, []);
 
   // --- UI Components (unchanged) ---
@@ -497,7 +496,7 @@ export default function LibraryReportsDashboard() {
               />
               <TabButton
                 id="inventory"
-                title="สินค้าคงคลัง"
+                title="คลังหนังสือ"
                 icon={Package}
                 isActive={activeTab === "inventory"}
                 onClick={setActiveTab}
@@ -523,33 +522,33 @@ export default function LibraryReportsDashboard() {
           {activeTab === "dashboard" && dashboardData?.stats && (
             <div className="space-y-8">
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
                 <StatCard
                   title="หนังสือทั้งหมด"
                   value={dashboardData.stats.total_books}
                   icon={BookOpen}
-                  color="from-violet-500 to-purple-600"
+                  color="from-violet-500 to-purple-600 shadow-xl shadow-cyan-400"
                   subtitle={`${dashboardData.stats.total_copies} สำเนา`}
                 />
                 <StatCard
-                  title="สมาชิกทั้งหมด"
+                  title="บัญชีทั้งหมด"
                   value={dashboardData.stats.total_users}
                   icon={Users}
-                  color="from-blue-500 to-cyan-600"
+                  color="from-blue-500 to-cyan-600 shadow-xl shadow-cyan-400"
                   subtitle={`${dashboardData.stats.total_staff} เจ้าหน้าที่`}
                 />
                 <StatCard
                   title="หนังสือพร้อมให้ยืม"
                   value={dashboardData.stats.available_copies}
                   icon={BookMarked}
-                  color="from-green-500 to-emerald-600"
+                  color="from-green-500 to-emerald-600 shadow-xl shadow-cyan-400"
                   subtitle={`${dashboardData.stats.borrowed_copies} ถูกยืม`}
                 />
                 <StatCard
                   title="หนังสือเกินกำหนด"
                   value={dashboardData.stats.overdue_books}
                   icon={AlertTriangle}
-                  color="from-red-500 to-pink-600"
+                  color="from-red-500 to-pink-600 shadow-xl shadow-cyan-400"
                   subtitle={`${dashboardData.stats.total_reservations} จอง`}
                 />
               </div>
@@ -560,30 +559,30 @@ export default function LibraryReportsDashboard() {
                   title="การยืมวันนี้"
                   value={dashboardData.stats.today_borrows}
                   icon={BookOpen}
-                  color="from-cyan-500 to-blue-600"
+                  color="from-cyan-500 to-blue-600 shadow-xl shadow-cyan-400"
                   subtitle="รายการใหม่"
                 />
                 <StatCard
                   title="การคืนวันนี้"
                   value={dashboardData.stats.today_returns}
                   icon={UserCheck}
-                  color="from-emerald-500 to-green-600"
+                  color="from-emerald-500 to-green-600 shadow-xl shadow-cyan-400"
                   subtitle="หนังสือที่คืน"
                 />
                 <StatCard
                   title="การจองวันนี้"
                   value={dashboardData.stats.today_reservations}
                   icon={Calendar}
-                  color="from-orange-500 to-yellow-600"
+                  color="from-orange-500 to-yellow-600 shadow-xl shadow-cyan-400"
                   subtitle="คำขอใหม่"
                 />
               </div>
 
               {/* Recent Activity */}
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <Activity className="w-6 h-6 mr-2 text-green-400" />
-                  กิจกรรมล่าสุด
+                  การจองล่าสุด
                 </h3>
                 <div className="space-y-4 max-h-80 overflow-y-auto">
                   {dashboardData.recent_activity
@@ -630,7 +629,7 @@ export default function LibraryReportsDashboard() {
 
           {/* Overdue Tab */}
           {activeTab === "overdue" && (
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                 <Clock className="w-6 h-6 mr-2 text-red-400" />
                 หนังสือเกินกำหนด ({overdueBooks.length} รายการ)
@@ -726,7 +725,7 @@ export default function LibraryReportsDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Popular Books Chart */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-2 text-violet-400" />
                     หนังสือยอดนิยม
@@ -763,7 +762,7 @@ export default function LibraryReportsDashboard() {
                 </div>
 
                 {/* Popular Categories */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <PieChartIcon className="w-6 h-6 mr-2 text-pink-400" />
                     หมวดหมู่ยอดนิยม
@@ -811,7 +810,7 @@ export default function LibraryReportsDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Active Members */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <Users className="w-6 h-6 mr-2 text-green-400" />
                     สมาชิกที่ใช้งานมากที่สุด
@@ -844,7 +843,7 @@ export default function LibraryReportsDashboard() {
                 </div>
 
                 {/* Inactive Members */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <UserPlus className="w-6 h-6 mr-2 text-orange-400" />
                     สมาชิกที่ไม่ได้ใช้งาน
@@ -886,7 +885,7 @@ export default function LibraryReportsDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Inventory Stats by Category */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <Package className="w-6 h-6 mr-2 text-blue-400" />
                     สต็อกตามหมวดหมู่
@@ -934,7 +933,7 @@ export default function LibraryReportsDashboard() {
                 </div>
 
                 {/* Utilization Rate */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-2 text-green-400" />
                     อัตราการใช้งาน
@@ -974,10 +973,10 @@ export default function LibraryReportsDashboard() {
               </div>
 
               {/* Low Stock Books */}
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <AlertTriangle className="w-6 h-6 mr-2 text-red-400" />
-                  หนังสือที่มีสำเนาน้อย ({lowStockBooks.length} รายการ)
+                  คลังหนังสือ ({lowStockBooks.length} รายการ)
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -1063,10 +1062,10 @@ export default function LibraryReportsDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Monthly Activity Chart */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <Calendar className="w-6 h-6 mr-2 text-blue-400" />
-                    กิจกรรมรายเดือน
+                    ความเคลื่อนไหวรายเดือน
                   </h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1114,10 +1113,10 @@ export default function LibraryReportsDashboard() {
                 </div>
 
                 {/* New Members Chart */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <UserPlus className="w-6 h-6 mr-2 text-green-400" />
-                    สมาชิกใหม่รายเดือน
+                    จำนวนสมาชิกใหม่รายเดือน
                   </h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1151,7 +1150,7 @@ export default function LibraryReportsDashboard() {
               </div>
 
               {/* Monthly Stats Table */}
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <BarChart3 className="w-6 h-6 mr-2 text-purple-400" />
                   สถิติรายเดือน
@@ -1218,10 +1217,10 @@ export default function LibraryReportsDashboard() {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Staff Performance Chart */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <Award className="w-6 h-6 mr-2 text-yellow-400" />
-                    ประสิทธิภาพเจ้าหน้าที่
+                    การทำงานเจ้าหน้าที่
                   </h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1261,7 +1260,7 @@ export default function LibraryReportsDashboard() {
                 </div>
 
                 {/* Staff Activity Breakdown */}
-                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <Activity className="w-6 h-6 mr-2 text-cyan-400" />
                     กิจกรรมเจ้าหน้าที่
@@ -1307,7 +1306,7 @@ export default function LibraryReportsDashboard() {
               </div>
 
               {/* Staff Performance Table */}
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <Users className="w-6 h-6 mr-2 text-purple-400" />
                   รายละเอียดประสิทธิภาพเจ้าหน้าที่

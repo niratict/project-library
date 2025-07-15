@@ -292,28 +292,28 @@ export default function BorrowReturnPage() {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-2xl shadow-xl shadow-green-500/20 p-6 text-center transform hover:scale-105 transition-all duration-300">
+            <div className="bg-white rounded-2xl shadow-xl shadow-green-400 p-6 text-center transform hover:scale-105 transition-all duration-300">
               <div className="text-5xl mb-3">📘</div>
               <h2 className="text-3xl font-bold text-gray-800">
                 {stats.total}
               </h2>
               <p className="text-gray-500 font-medium">รวมการยืมทั้งหมด</p>
             </div>
-            <div className="bg-white rounded-2xl shadow-xl shadow-blue-500/20 p-6 text-center transform hover:scale-105 transition-all duration-300">
+            <div className="bg-white rounded-2xl shadow-xl shadow-blue-400 p-6 text-center transform hover:scale-105 transition-all duration-300">
               <div className="text-5xl mb-3">🕒</div>
               <h2 className="text-3xl font-bold text-blue-600">
                 {stats.borrowed}
               </h2>
               <p className="text-gray-500 font-medium">กำลังยืมอยู่</p>
             </div>
-            <div className="bg-white rounded-2xl shadow-xl shadow-red-500/20 p-6 text-center transform hover:scale-105 transition-all duration-300">
+            <div className="bg-white rounded-2xl shadow-xl shadow-red-400 p-6 text-center transform hover:scale-105 transition-all duration-300">
               <div className="text-5xl mb-3">⏰</div>
               <h2 className="text-3xl font-bold text-red-500">
                 {stats.overdue}
               </h2>
               <p className="text-gray-500 font-medium">เกินกำหนด</p>
             </div>
-            <div className="bg-white rounded-2xl shadow-xl shadow-orange-500/20 p-6 text-center transform hover:scale-105 transition-all duration-300">
+            <div className="bg-white rounded-2xl shadow-xl shadow-orange-400 p-6 text-center transform hover:scale-105 transition-all duration-300">
               <div className="text-5xl mb-3">💰</div>
               <h2 className="text-3xl font-bold text-orange-600">
                 {stats.totalFine}฿
@@ -323,7 +323,7 @@ export default function BorrowReturnPage() {
           </div>
 
           {/* Books Table */}
-          <div className="bg-white rounded-2xl shadow-2xl shadow-pink-500/30 overflow-hidden mb-8">
+          <div className="bg-white rounded-2xl shadow-xl shadow-pink-300 overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-6">
               <h2 className="text-2xl font-bold text-white flex items-center">
                 <span className="mr-3">📋</span>
