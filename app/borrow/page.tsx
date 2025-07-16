@@ -346,31 +346,37 @@ export default function BorrowReturnPage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full">
+                <table className="min-w-full table-fixed">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-16 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ลำดับ
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div className="text-center">
+                          <div>รหัส</div>
+                          <div>การยืม</div>
+                        </div>
+                      </th>
+                      <th className="w-80 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ชื่อหนังสือ
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-28 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         วันที่ยืม
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         กำหนดคืน
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-28 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         วันที่คืน
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-24 px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ค่าปรับ
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         สถานะ
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         เจ้าหน้าที่
                       </th>
                     </tr>
@@ -381,27 +387,35 @@ export default function BorrowReturnPage() {
                         key={book.borrow_transactions_id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-center">
                           {(currentPage - 1) * 10 + index + 1}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-center">
+                          {book.borrow_transactions_id}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-900">
                           <div className="flex items-center">
                             {book.book_image && (
                               <img
                                 src={book.book_image}
                                 alt={book.book_title}
-                                className="w-8 h-10 object-cover rounded mr-3"
+                                className="w-8 h-10 object-cover rounded mr-3 flex-shrink-0"
                               />
                             )}
-                            <div className="max-w-xs truncate">
-                              {book.book_title}
+                            <div className="min-w-0 flex-1">
+                              <div
+                                className="truncate font-medium"
+                                title={book.book_title}
+                              >
+                                {book.book_title}
+                              </div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600">
                           {formatDate(book.borrow_date)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600">
                           <div
                             className={
                               book.status === "overdue"
@@ -412,13 +426,13 @@ export default function BorrowReturnPage() {
                             {formatDate(book.due_date)}
                             {book.status === "overdue" &&
                               book.overdue_days > 0 && (
-                                <div className="text-xs text-red-500">
+                                <div className="text-xs text-red-500 mt-1">
                                   เกิน {book.overdue_days} วัน
                                 </div>
                               )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600">
                           {book.return_date ? (
                             formatDate(book.return_date)
                           ) : (
@@ -427,26 +441,31 @@ export default function BorrowReturnPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm font-semibold text-center">
                           {book.fine > 0 ? (
                             <span className="text-red-600">
-                              {book.fine.toLocaleString()} บาท
+                              {book.fine.toLocaleString()}
                             </span>
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(
+                            className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(
                               book.status
                             )}`}
                           >
                             {getStatusText(book.status)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {book.staff_name || "-"}
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <div
+                            className="truncate"
+                            title={book.staff_name || "-"}
+                          >
+                            {book.staff_name || "-"}
+                          </div>
                         </td>
                       </tr>
                     ))}

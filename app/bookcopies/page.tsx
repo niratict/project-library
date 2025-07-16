@@ -627,7 +627,7 @@ export default function BookCopiesManagementPage() {
           )}
         </div>
       </div>
-      import CustomDropdown from './components/CustomDropdown';
+
       {/* Popup Form - ใช้ CustomDropdown แทน select */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

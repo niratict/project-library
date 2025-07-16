@@ -597,14 +597,10 @@ export default function ReturnManagementPage() {
         />
 
         {/* Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">รายการทั้งหมด</p>
             <h2 className="text-xl text-white font-bold">{totalReturns}</h2>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
-            <p className="text-sm text-white">คืนแล้ว</p>
-            <h2 className="text-xl text-white font-bold">{returnedBooks}</h2>
           </div>
           <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-lg shadow-xl shadow-cyan-400 p-4 text-center">
             <p className="text-sm text-white">เกินกำหนด</p>
@@ -617,17 +613,18 @@ export default function ReturnManagementPage() {
         </div>
         {/* Return Table */}
         <div className="mt-6 bg-white rounded-lg shadow-xl shadow-cyan-400 overflow-x-auto">
-          <table className="min-w-full table-auto text-sm">
+          <table className="min-w-full table-fixed text-sm">
             <thead className="bg-gray-100 text-left text-gray-600">
               <tr>
-                <th className="py-3 px-4 w-16">ลำดับ</th>
-                <th className="py-3 px-4 w-1/4 min-w-[200px]">ชื่อหนังสือ</th>
-                <th className="py-3 px-4 w-32">ผู้ยืม</th>
-                <th className="py-3 px-4 w-32">วันที่ยืม</th>
-                <th className="py-3 px-4 w-32">กำหนดคืน</th>
-                <th className="py-3 px-4 w-24">ค่าปรับ</th>
-                <th className="py-3 px-4 w-24">สถานะ</th>
-                <th className="py-3 px-4 w-40 text-right">การจัดการ</th>
+                <th className="py-3 px-3 w-12 text-center">ลำดับ</th>
+                <th className="py-3 px-3 w-64">ชื่อหนังสือ</th>
+                <th className="py-3 px-3 w-32 text-center">รหัสการยืม</th>
+                <th className="py-3 px-3 w-28 text-center">ผู้ยืม</th>
+                <th className="py-3 px-3 w-32 text-center">วันที่ยืม</th>
+                <th className="py-3 px-3 w-32 text-center">กำหนดคืน</th>
+                <th className="py-3 px-3 w-20 text-center">ค่าปรับ</th>
+                <th className="py-3 px-3 w-24 text-center">สถานะ</th>
+                <th className="py-3 px-3 w-40 text-center">การจัดการ</th>
               </tr>
             </thead>
             <tbody>
@@ -643,27 +640,36 @@ export default function ReturnManagementPage() {
                       key={record.borrow_transactions_id}
                       className="border-b hover:bg-gray-50"
                     >
-                      <td className="py-3 px-4 text-center">{index + 1}</td>
-                      <td className="py-3 px-4 font-medium text-gray-900">
+                      <td className="py-3 px-3 text-center font-medium">
+                        {index + 1}
+                      </td>
+                      <td className="py-3 px-3">
                         <div
-                          className="truncate max-w-[200px]"
+                          className="truncate font-medium text-gray-900"
                           title={record.title}
                         >
                           {record.title}
                         </div>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-3 text-center">
+                        <div className="truncate text-gray-700 font-mono text-xs">
+                          {record.borrow_transactions_id}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-center">
                         <div
-                          className="truncate max-w-[120px]"
+                          className="truncate text-gray-700"
                           title={record.returner}
                         >
                           {record.returner}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm">
-                        <div className="flex flex-col">
-                          <span>{formatDateDMY(record.borrow_date)}</span>
-                          <span className="text-gray-500 text-xs">
+                      <td className="py-3 px-3 text-center">
+                        <div className="text-xs">
+                          <div className="font-medium text-gray-900">
+                            {formatDateDMY(record.borrow_date)}
+                          </div>
+                          <div className="text-gray-500 mt-1">
                             {new Date(record.borrow_date).toLocaleTimeString(
                               "th-TH",
                               {
@@ -671,20 +677,20 @@ export default function ReturnManagementPage() {
                                 minute: "2-digit",
                               }
                             )}
-                          </span>
+                          </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm">
-                        <div className="flex flex-col">
-                          <span
-                            className={
-                              isOverdue ? "text-red-600 font-semibold" : ""
-                            }
+                      <td className="py-3 px-3 text-center">
+                        <div className="text-xs">
+                          <div
+                            className={`font-medium ${
+                              isOverdue ? "text-red-600" : "text-gray-900"
+                            }`}
                           >
                             {formatDateDMY(record.due_date)}
-                          </span>
-                          <span
-                            className={`text-xs ${
+                          </div>
+                          <div
+                            className={`mt-1 ${
                               isOverdue ? "text-red-500" : "text-gray-500"
                             }`}
                           >
@@ -695,16 +701,16 @@ export default function ReturnManagementPage() {
                                 minute: "2-digit",
                               }
                             )}
-                          </span>
+                          </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3 px-3 text-center">
                         {record.fine > 0 ? (
-                          <div className="flex flex-col">
-                            <span className="text-red-500 font-semibold">
+                          <div className="text-xs">
+                            <div className="text-red-500 font-semibold">
                               {record.fine}
-                            </span>
-                            <span className="text-xs text-gray-500">บาท</span>
+                            </div>
+                            <div className="text-gray-500 mt-1">บาท</div>
                           </div>
                         ) : (
                           <span className="text-green-500 font-medium text-xs">
@@ -712,60 +718,76 @@ export default function ReturnManagementPage() {
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3 px-3 text-center">
                         {isReturned ? (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded-full">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-green-500 rounded-full whitespace-nowrap">
                             คืนแล้ว
                           </span>
                         ) : isOverdue ? (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-red-500 rounded-full">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-red-500 rounded-full whitespace-nowrap">
                             เกินกำหนด
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-1 text-xs text-white bg-yellow-500 rounded-full">
+                          <span className="inline-block px-2 py-1 text-xs text-white bg-yellow-500 rounded-full whitespace-nowrap">
                             ยังไม่คืน
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex flex-wrap gap-1 justify-end">
-                          <button
-                            onClick={() => {
-                              setSelectedReturn(record);
-                              setShowDetailModal(true);
-                            }}
-                            className="text-xs border px-2 py-1 text-blue-600 rounded hover:bg-blue-100 transition-colors"
-                          >
-                            ดู
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedReturn(record);
-                              setEditForm({
-                                fine_amount: record.fine.toString(),
-                              });
-                              setShowEditModal(true);
-                            }}
-                            className="text-xs border px-2 py-1 text-yellow-700 rounded hover:bg-yellow-100 transition-colors"
-                          >
-                            แก้ไข
-                          </button>
-                          {!isReturned && (
+                      <td className="py-3 px-3">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex gap-1 justify-center">
                             <button
-                              onClick={() => handleReturnClick(record)}
-                              disabled={loading}
-                              className="text-xs border px-2 py-1 text-green-600 rounded hover:bg-green-100 disabled:opacity-50 transition-colors"
+                              onClick={() => {
+                                setSelectedReturn(record);
+                                setShowDetailModal(true);
+                              }}
+                              className="text-xs border px-2 py-1 text-blue-600 rounded hover:bg-blue-100 transition-colors flex-1 min-w-0"
                             >
-                              รับคืน
+                              ดู
                             </button>
-                          )}
-                          <button
-                            onClick={() => handleDeleteClick(record)}
-                            disabled={loading}
-                            className="text-xs border px-2 py-1 text-red-600 rounded hover:bg-red-100 disabled:opacity-50 transition-colors"
-                          >
-                            ลบ
-                          </button>
+
+                            {/* ปุ่มแก้ไข - แสดงเฉพาะเมื่อคืนแล้ว */}
+                            {isReturned ? (
+                              <button
+                                onClick={() => {
+                                  setSelectedReturn(record);
+                                  setEditForm({
+                                    fine_amount: record.fine.toString(),
+                                  });
+                                  setShowEditModal(true);
+                                }}
+                                className="text-xs border px-2 py-1 text-yellow-700 rounded hover:bg-yellow-100 transition-colors flex-1 min-w-0"
+                              >
+                                แก้ไข
+                              </button>
+                            ) : (
+                              <button
+                                disabled
+                                className="text-xs border px-2 py-1 text-gray-400 rounded bg-gray-100 cursor-not-allowed transition-colors flex-1 min-w-0"
+                                title="ต้องรับคืนหนังสือก่อนถึงจะแก้ไขค่าปรับได้"
+                              >
+                                แก้ไข
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex gap-1 justify-center">
+                            {!isReturned && (
+                              <button
+                                onClick={() => handleReturnClick(record)}
+                                disabled={loading}
+                                className="text-xs border px-2 py-1 text-green-600 rounded hover:bg-green-100 disabled:opacity-50 transition-colors flex-1 min-w-0"
+                              >
+                                รับคืน
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDeleteClick(record)}
+                              disabled={loading}
+                              className="text-xs border px-2 py-1 text-red-600 rounded hover:bg-red-100 disabled:opacity-50 transition-colors flex-1 min-w-0"
+                            >
+                              ลบ
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -799,7 +821,7 @@ export default function ReturnManagementPage() {
               <form onSubmit={handleAddReturn} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    รหัสรายการยืม
+                    รหัสการยืม
                   </label>
                   <input
                     type="number"
@@ -987,18 +1009,29 @@ export default function ReturnManagementPage() {
                   </button>
                 )}
 
-                <button
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    setEditForm({
-                      fine_amount: selectedReturn.fine.toString(),
-                    });
-                    setShowEditModal(true);
-                  }}
-                  className="px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                >
-                  แก้ไขค่าปรับ
-                </button>
+                {/* แสดงปุ่มแก้ไขเฉพาะเมื่อคืนแล้ว */}
+                {selectedReturn && selectedReturn.return_date && (
+                  <button
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      setEditForm({
+                        fine_amount: selectedReturn.fine.toString(),
+                      });
+                      setShowEditModal(true);
+                    }}
+                    className="px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                  >
+                    แก้ไขค่าปรับ
+                  </button>
+                )}
+
+                {/* แสดงข้อความแจ้งเตือนถ้ายังไม่คืน */}
+                {selectedReturn && !selectedReturn.return_date && (
+                  <div className="px-4 py-2 text-sm bg-gray-100 text-gray-600 rounded border">
+                    <i className="fas fa-info-circle mr-1"></i>
+                    แก้ไข
+                  </div>
+                )}
               </div>
             </div>
           </div>

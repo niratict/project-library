@@ -73,6 +73,7 @@ async function GET_DASHBOARD(req: NextRequest) {
           -- สถิติวันนี้
           (SELECT COUNT(*) FROM borrow_transactions WHERE CAST(created_at AS DATE) = CAST(GETDATE() AS DATE) AND borrow_date IS NOT NULL AND deleted_at IS NULL) as today_borrows,
           (SELECT COUNT(*) FROM borrow_transactions WHERE CAST(updated_at AS DATE) = CAST(GETDATE() AS DATE) AND return_date IS NOT NULL AND deleted_at IS NULL) as today_returns,
+          (SELECT COUNT(*) FROM borrow_transactions WHERE CAST(created_at AS DATE) = CAST(GETDATE() AS DATE) AND due_date IS NULL AND return_date IS NULL AND deleted_at IS NULL) as today_reservations,
           (SELECT COUNT(*) FROM users WHERE CAST(created_at AS DATE) = CAST(GETDATE() AS DATE) AND deleted_at IS NULL) as today_new_members
       `);
 
