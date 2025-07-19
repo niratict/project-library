@@ -36,6 +36,7 @@ export default function StaffLoginPage() {
         // เก็บ token และข้อมูล staff
         localStorage.setItem('staffToken', data.token);
         localStorage.setItem('staffInfo', JSON.stringify(data.staff));
+        localStorage.setItem('staff_id', data.staff.staff_id.toString()); 
         
         setMessage('เข้าสู่ระบบสำเร็จ');
 

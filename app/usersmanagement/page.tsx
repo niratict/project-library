@@ -42,7 +42,7 @@ function formatDateDMY(dateStr: string) {
   return `${d}-${m}-${y}`;
 }
 
-export default function CategoryManagementPage() {
+export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

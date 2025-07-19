@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [popularBooks, setPopularBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalBooks, setTotalBooks] = useState<number>(0);
 
   useEffect(() => {
     const fetchPopularBooks = async () => {
@@ -39,9 +40,14 @@ export default function DashboardPage() {
 
         const books = await response.json();
 
+        // เก็บจำนวนหนังสือทั้งหมดที่มีสถานะ active
+        const activeBooks = books.filter(
+          (book: Book) => book.status === "active"
+        );
+        setTotalBooks(activeBooks.length);
+
         // จำลองการจัดเรียงตามความนิยม (ใช้ book_id หรือ created_at)
-        const sortedBooks = books
-          .filter((book: Book) => book.status === "active")
+        const sortedBooks = activeBooks
           .sort(
             (a: Book, b: Book) =>
               new Date(b.created_at).getTime() -
@@ -117,7 +123,7 @@ export default function DashboardPage() {
                     หนังสือทั้งหมด
                   </h3>
                   <p className="text-3xl font-bold mt-2">
-                    {popularBooks.length}
+                    {totalBooks}
                   </p>
                 </div>
                 <div className="text-5xl opacity-70">📚</div>

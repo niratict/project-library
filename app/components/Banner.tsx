@@ -6,10 +6,28 @@ import 'swiper/css/pagination';
 
 const slides = [
   {
-    image: '/banner/library-banner.webp',
+    image: '/banner/1.png',
   },
   {
-    image: '/banner/library.webp',
+    image: '/banner/2.png',
+  },
+  {
+    image: '/banner/3.png',
+  },
+  {
+    image: '/banner/4.png',
+  },
+  {
+    image: '/banner/5.png',
+  },
+  {
+    image: '/banner/6.png',
+  },
+  {
+    image: '/banner/7.png',
+  },
+  {
+    image: '/banner/8.png',
   },
 ];
 

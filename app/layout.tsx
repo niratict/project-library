@@ -1,6 +1,8 @@
+// app/layout.tsx (Updated)
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
 import "./globals.css";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const prompt = Prompt({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -20,7 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${prompt.variable} antialiased`}>{children}</body>
+      <body className={`${prompt.variable} antialiased`}>
+        <ProtectedRoute>{children}</ProtectedRoute>
+      </body>
     </html>
   );
 }
+
+//=====================================

@@ -133,16 +133,21 @@ export default function Header() {
   const handleLogout = () => {
     if (authUser?.type === "user") {
       localStorage.removeItem("token");
+      localStorage.removeItem("user_id"); // เพิ่มบรรทัดนี้
     } else if (authUser?.type === "staff") {
       localStorage.removeItem("staffToken");
       localStorage.removeItem("staffInfo");
+      localStorage.removeItem("staff_id"); // เพิ่มบรรทัดนี้
     }
+
+    // หรือจะใช้วิธีลบทั้งหมดเลยก็ได้ (ถ้าไม่มีข้อมูลสำคัญอื่นใน localStorage)
+    // localStorage.clear();
+
     setAuthUser(null);
     setShowDropdown(false);
     setShowMobileMenu(false);
     router.push("/");
   };
-
   const getUserDisplayName = () => {
     if (!authUser) return "";
 
@@ -215,16 +220,16 @@ export default function Header() {
         <div className="flex justify-between items-center h-16 ">
           {/* Logo */}
           <div className="bg-gray-200 bg-opacity-8 rounded-xl pt-7 mr-2">
-          <button
-            onClick={handleLogoClick}
-            className="cursor-pointer flex-shrink-0"
-          >
-            <img
-              src="/logo/logoWeb.png"
-              alt="ห้องสมุดประชาชน"
-              className="h-[60px] sm:h-[80px] w-auto hover:opacity-80 transition-opacity"
-            />
-          </button>
+            <button
+              onClick={handleLogoClick}
+              className="cursor-pointer flex-shrink-0"
+            >
+              <img
+                src="/logo/logoWeb.png"
+                alt="ห้องสมุดประชาชน"
+                className="h-[60px] sm:h-[80px] w-auto hover:opacity-80 transition-opacity"
+              />
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -315,6 +320,31 @@ export default function Header() {
                       </p>
                     </div>
 
+                    {/* เมนูจัดการสำหรับ User */}
+                    {authUser.type === "user" && (
+                      <Link
+                        href="/profile_user"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        <button className="w-full text-left px-4 py-3 hover:bg-blue-50 text-blue-600 transition-colors">
+                          👤 จัดการโปรไฟล์
+                        </button>
+                      </Link>
+                    )}
+
+                    {/* เมนูจัดการสำหรับ Staff */}
+                    {authUser.type === "staff" && (
+                      <Link
+                        href="/profile_staff"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        <button className="w-full text-left px-4 py-3 hover:bg-blue-50 text-blue-600 transition-colors">
+                          👤 จัดการโปรไฟล์
+                        </button>
+                      </Link>
+                    )}
+
+                    <div className="border-t border-gray-200"></div>
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 transition-colors"
@@ -453,6 +483,39 @@ export default function Header() {
                 </>
               )}
 
+              {/* Mobile Management Menu */}
+              {authUser && (
+                <div className="border-t border-gray-200 pt-2 mt-2">
+                  <div className="px-3 py-1">
+                    <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                      จัดการ
+                    </p>
+                  </div>
+
+                  {/* เมนูจัดการสำหรับ User ใน Mobile */}
+                  {authUser.type === "user" && (
+                    <Link
+                      href="/profile_user"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                      onClick={handleMobileMenuClose}
+                    >
+                      👤 จัดการโปรไฟล์
+                    </Link>
+                  )}
+
+                  {/* เมนูจัดการสำหรับ Staff ใน Mobile */}
+                  {authUser.type === "staff" && (
+                    <Link
+                      href="/profile_staff"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                      onClick={handleMobileMenuClose}
+                    >
+                      🛠️ จัดการโปรไฟล์เจ้าหน้าที่
+                    </Link>
+                  )}
+                </div>
+              )}
+
               {/* Mobile Auth Buttons */}
               {!authUser && (
                 <div className="px-3 py-2 space-y-2">
@@ -477,12 +540,14 @@ export default function Header() {
 
               {/* Mobile Logout Button */}
               {authUser && (
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-                >
-                  🚪 ออกจากระบบ
-                </button>
+                <div className="border-t border-gray-200 pt-2 mt-2">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                  >
+                    🚪 ออกจากระบบ
+                  </button>
+                </div>
               )}
             </div>
           </div>
