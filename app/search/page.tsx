@@ -74,6 +74,10 @@ export default function BookSearchPage() {
     null
   );
 
+  // เพิ่ม state สำหรับแจ้งเตือนจำนวนการจอง
+  const [reservationCount, setReservationCount] = useState(0);
+  const [showReservationAlert, setShowReservationAlert] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -91,12 +95,35 @@ export default function BookSearchPage() {
     fetchBooks();
     fetchBookCopies();
     fetchCategories(); // เพิ่มการเรียก API categories
-  }, []);
+    if (user) {
+      fetchUserReservationCount(); // เรียกดูจำนวนการจองปัจจุบัน
+    }
+  }, [user]);
 
   // Reset to first page when search filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [query, category, status]);
+
+  // เพิ่มฟังก์ชัน fetchUserReservationCount
+  const fetchUserReservationCount = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(`/api/reservations/user/${user.user_id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setReservationCount(data.data?.length || 0);
+      }
+    } catch (err) {
+      console.error("Error fetching reservation count:", err);
+    }
+  };
 
   // เพิ่มฟังก์ชัน fetchCategories
   const fetchCategories = async () => {
@@ -211,10 +238,27 @@ export default function BookSearchPage() {
           )
         );
 
-        // Auto hide message after 2 seconds
+        // อัปเดตจำนวนการจอง และแสดงการแจ้งเตือน
+        const newCount = reservationCount + 1;
+        setReservationCount(newCount);
+        setShowReservationAlert(true);
+
+        // ส่งข้อมูลไปยัง Header component (ถ้ามี context หรือ prop drilling)
+        // หรือใช้ localStorage เพื่อให้ Header อ่านได้
+        localStorage.setItem("userReservationCount", newCount.toString());
+
+        // แสดงการกระพิบที่ header (ใช้ custom event)
+        window.dispatchEvent(
+          new CustomEvent("reservationUpdated", {
+            detail: { count: newCount },
+          })
+        );
+
+        // Auto hide message after 3 seconds
         setTimeout(() => {
           setReservationMessage(null);
-        }, 2000);
+          setShowReservationAlert(false);
+        }, 3000);
       } else {
         setReservationMessage(`${data.error}`);
       }
@@ -226,7 +270,29 @@ export default function BookSearchPage() {
     }
   };
 
-  const filteredBooks = books.filter((book) => {
+  // ฟังก์ชันกรองหนังสือตามประเภทผู้ใช้
+  const getFilteredBooksByUserType = (books: Book[]) => {
+    if (!user) return books;
+
+    // Admin และ Librarian เห็นหนังสือทั้งหมด
+    if (["admin", "librarian"].includes(user.user_type)) {
+      return books;
+    }
+
+    // Citizen เห็นเฉพาะหนังสือที่เหมาะสำหรับ citizen (ไม่ใช่ education)
+    if (user.user_type === "citizen") {
+      return books.filter((book) => book.reader_group !== "education");
+    }
+
+    // Educational เห็นเฉพาะหนังสือของ education
+    if (user.user_type === "educational") {
+      return books.filter((book) => book.reader_group === "education");
+    }
+
+    return books;
+  };
+
+  const filteredBooks = getFilteredBooksByUserType(books).filter((book) => {
     const matchesQuery =
       query === "" ||
       book.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -430,7 +496,100 @@ export default function BookSearchPage() {
   return (
     <div className="min-h-screen bg-blue-50">
       <Header />
+
+      {/* แสดงการแจ้งเตือนการจองสำเร็จแบบกระพิบ */}
+      {showReservationAlert && (
+        <div className="fixed top-20 right-4 z-50 animate-bounce">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl border-2 border-green-300">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🎉</span>
+              <div>
+                <p className="font-bold">จองสำเร็จ!</p>
+                <p className="text-sm">
+                  การจองของคุณ: {reservationCount} รายการ
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        {/* แสดงข้อมูลประเภทผู้ใช้และจำนวนหนังสือที่แสดง */}
+        {user && (
+          <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-xl shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">
+                  {user.user_type === "citizen"
+                    ? "👤"
+                    : user.user_type === "educational"
+                    ? "🎓"
+                    : user.user_type === "librarian"
+                    ? "📚"
+                    : "🔧"}
+                </span>
+                <div>
+                  <p className="text-sm text-gray-600">
+                    สวัสดี{" "}
+                    {user.user_type === "citizen"
+                      ? "สมาชิกทั่วไป (ประชาชน)"
+                      : user.user_type === "educational"
+                      ? "สมาชิกสถาบันการศึกษา"
+                      : user.user_type === "librarian"
+                      ? "บรรณารักษ์"
+                      : "ผู้ดูแลระบบ"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    แสดงหนังสือที่เหมาะสำหรับคุณ:{" "}
+                    {user.user_type === "citizen"
+                      ? "หนังสือทั่วไป"
+                      : user.user_type === "educational"
+                      ? "หนังสือสถาบันการศึกษา"
+                      : "หนังสือทั้งหมด"}
+                  </p>
+                </div>
+              </div>
+              {reservationCount > 0 && (
+                <div className="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-4 py-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                      {reservationCount}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-amber-900 leading-tight">
+                      คุณได้ทำการจองหนังสือแล้ว {reservationCount} รายการ
+                    </div>
+                    <div className="text-xs text-amber-700 mt-0.5">
+                      ดูรายการจองได้ที่{" "}
+                      <a
+                        href="/reservations"
+                        className="font-medium underline decoration-amber-400 underline-offset-2 hover:text-amber-800 hover:decoration-amber-600 transition-colors"
+                      >
+                        เมนู "ประวัติการจอง"
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="w-4 h-4 text-amber-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="bg-white p-6 rounded-xl shadow-xl shadow-purple-500 space-y-4">
           <h2 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
             <span className="text-purple-500 text-xl">🔍</span> ค้นหาหนังสือ
@@ -591,14 +750,15 @@ export default function BookSearchPage() {
                     </div>
 
                     {/* Access Restriction Warning */}
-                      {book.reader_group === "education" && !userCanAccess && (
-                        <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded-lg">
-                          <span className="text-red-500 mr-2">⚠️</span>
-                          <p className="text-red-600 text-xs">
-                            หนังสือนี้สงวนไว้สำหรับกลุ่มสมาชิกเฉพาะ (สถาบันการศึกษา)
-                          </p>
-                        </div>
-                      )}
+                    {book.reader_group === "education" && !userCanAccess && (
+                      <div className="flex items-center p-2 bg-red-50 border border-red-200 rounded-lg">
+                        <span className="text-red-500 mr-2">⚠️</span>
+                        <p className="text-red-600 text-xs">
+                          หนังสือนี้สงวนไว้สำหรับกลุ่มสมาชิกเฉพาะ
+                          (สถาบันการศึกษา)
+                        </p>
+                      </div>
+                    )}
 
                     {/* Action Button */}
                     {!(book.reader_group === "education" && !userCanAccess) && (
@@ -748,7 +908,12 @@ export default function BookSearchPage() {
                       <strong>หมวดหมู่:</strong> {getCategoryName(selectedBook)}
                     </p>
                     <p>
-                      <strong>กลุ่มผู้อ่าน:</strong> {selectedBook.reader_group}
+                      <strong>กลุ่มผู้อ่าน:</strong>{" "}
+                      {selectedBook.reader_group === "children"
+                        ? "เด็ก"
+                        : selectedBook.reader_group === "education"
+                        ? "สถาบันการศึกษา"
+                        : "ผู้ใหญ่"}
                     </p>
                   </div>
                   {selectedBook.description && (
@@ -797,7 +962,11 @@ export default function BookSearchPage() {
                         <div>
                           <strong>กลุ่มผู้อ่าน:</strong>
                           <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                            {selectedBook.reader_group}
+                            {selectedBook.reader_group === "children"
+                              ? "เด็ก"
+                              : selectedBook.reader_group === "education"
+                              ? "สถาบันการศึกษา"
+                              : "ผู้ใหญ่"}
                           </span>
                         </div>
                         <div>
@@ -822,9 +991,6 @@ export default function BookSearchPage() {
                           >
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
-                                <span className="font-semibold text-gray-800">
-                                  รหัสสำเนา {copy.book_copies_id}
-                                </span>
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                                     copy.status
@@ -840,7 +1006,12 @@ export default function BookSearchPage() {
                                   📚 หมวดหมู่: {getCategoryName(selectedBook)}
                                 </p>
                                 <p>
-                                  👥 กลุ่มผู้อ่าน: {selectedBook.reader_group}
+                                  👥 กลุ่มผู้อ่าน:{" "}
+                                  {selectedBook.reader_group === "children"
+                                    ? "เด็ก"
+                                    : selectedBook.reader_group === "education"
+                                    ? "สถาบันการศึกษา"
+                                    : "ผู้ใหญ่"}
                                 </p>
                               </div>
 

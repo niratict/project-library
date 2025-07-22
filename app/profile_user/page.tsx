@@ -293,10 +293,10 @@ export default function ProfileUserPage() {
 
   const getUserTypeLabel = (type: string) => {
     switch (type) {
-      case "customer":
-        return "ลูกค้า";
-      case "admin":
-        return "ผู้ดูแลระบบ";
+      case "citizen":
+        return "ประชาชน";
+      case "educational":
+        return "สถาบันการศึกษา";
       default:
         return type;
     }

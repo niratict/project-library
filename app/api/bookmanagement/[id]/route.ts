@@ -333,6 +333,26 @@ export async function DELETE(
       );
     }
 
+    // ตรวจสอบว่ามีสำเนาหนังสือ (book_copies) ที่อ้างอิงถึง book_id นี้อยู่หรือไม่
+    const copiesCheckResult = await pool
+      .request()
+      .input("book_id", sql.Int, booksId).query(`
+        SELECT COUNT(*) as copy_count FROM book_copies 
+        WHERE book_id = @book_id AND deleted_at IS NULL
+      `);
+
+    const copyCount = copiesCheckResult.recordset[0].copy_count;
+
+    if (copyCount > 0) {
+      return NextResponse.json(
+        {
+          error: `ไม่สามารถลบหนังสือได้ เนื่องจากมีสำเนาหนังสือจำนวน ${copyCount} เล่มอยู่`,
+          details: "กรุณาลบสำเนาหนังสือทั้งหมดก่อน หรือติดต่อผู้ดูแลระบบ",
+        },
+        { status: 409 } // Conflict status code
+      );
+    }
+
     const bookImage = checkResult.recordset[0].book_image;
 
     // ทำ Soft Delete - เปลี่ยนสถานะเป็น 'deleted' และตั้งค่า deleted_at

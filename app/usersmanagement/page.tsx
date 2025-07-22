@@ -108,10 +108,10 @@ export default function UserManagementPage() {
       type: "select" as const,
       options: [
         { value: "", label: "ทุกประเภท" },
-        { value: "citizen", label: "ทั่วไป" },
-        { value: "educational", label: "สถานศึกษา" },
+        { value: "citizen", label: "ประชาชน" },
+        { value: "educational", label: "สถาบันการศึกษา" },
         { value: "librarian", label: "บรรณารักษ์" },
-        { value: "admin", label: "ผู้ดูแล" },
+        { value: "admin", label: "ผู้ดูแลระบบ" },
       ],
       gridSpan: 1 as const,
     },
@@ -268,7 +268,7 @@ export default function UserManagementPage() {
     if (!["citizen", "educational"].includes(form.user_type)) {
       error(
         "ข้อมูลไม่ถูกต้อง",
-        "ประเภทสมาชิกต้องเป็น 'ทั่วไป' หรือ 'สถานศึกษา'"
+        "ประเภทสมาชิกต้องเป็น 'ประชาชน' หรือ 'สถาบันการศึกษา'"
       );
       return false;
     }
@@ -527,17 +527,22 @@ export default function UserManagementPage() {
                     </td>
                     <td className="py-3 px-4 text-gray-700">
                       {user.user_type === "citizen"
-                        ? "ทั่วไป"
+                        ? "ประชาชน"
                         : user.user_type === "librarian"
                         ? "บรรณารักษ์"
                         : user.user_type === "admin"
-                        ? "ผู้ดูแล"
+                        ? "ผู้ดูแลระบบ"
                         : user.user_type === "educational"
-                        ? "สถานศึกษา"
+                        ? "สถาบันการศึกษา"
                         : "ไม่ทราบ"}
                     </td>
                     <td className="py-3 px-4 text-gray-700">
-                      {user.gender || "-"}
+                      {user.gender === "male"
+                        ? "ชาย"
+                        : user.gender === "female"
+                        ? "หญิง"
+                        : "ไม่ระบุ"
+                      }
                     </td>
                     <td className="py-3 px-4 text-gray-700">
                       {user.phone || "-"}
@@ -672,8 +677,8 @@ export default function UserManagementPage() {
                 </label>
                 <CustomDropdown
                   options={[
-                    { value: "citizen", label: "ทั่วไป" },
-                    { value: "educational", label: "สถานศึกษา" },
+                    { value: "citizen", label: "ประชาชน" },
+                    { value: "educational", label: "สถาบันการศึกษา" },
                   ]}
                   value={form.user_type}
                   onChange={(value) => setForm({ ...form, user_type: value })}

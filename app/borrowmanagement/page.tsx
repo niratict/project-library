@@ -94,7 +94,7 @@ export default function BorrowManagementPage() {
   };
 
   // States for confirm borrow modal
-  const [borrowDays, setBorrowDays] = useState<number>(14);
+  const [borrowDays, setBorrowDays] = useState<number>(1);
 
   // Search and Filter States
   const [filters, setFilters] = useState<FilterValues>({
@@ -813,7 +813,7 @@ export default function BorrowManagementPage() {
                       type="number"
                       value={borrowDays}
                       onChange={(e) =>
-                        setBorrowDays(parseInt(e.target.value) || 14)
+                        setBorrowDays(parseInt(e.target.value) || 1)
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       min="1"

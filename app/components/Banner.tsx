@@ -20,15 +20,6 @@ const slides = [
   {
     image: '/banner/5.png',
   },
-  {
-    image: '/banner/6.png',
-  },
-  {
-    image: '/banner/7.png',
-  },
-  {
-    image: '/banner/8.png',
-  },
 ];
 
 export default function Banner() {
