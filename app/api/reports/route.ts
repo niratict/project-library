@@ -91,9 +91,9 @@ async function GET_DASHBOARD(req: NextRequest) {
           bt.created_at,
           bt.updated_at,
           CASE 
-            WHEN bt.return_date IS NOT NULL THEN 'คืนแล้ว'
-            WHEN bt.borrow_date IS NOT NULL THEN 'ยืม'
-            ELSE 'จอง'
+            WHEN bt.return_date IS NOT NULL THEN N'คืนแล้ว'
+            WHEN bt.borrow_date IS NOT NULL THEN N'ยืม'
+            ELSE N'จอง'
           END as activity_type,
           CASE 
             WHEN bt.return_date IS NOT NULL THEN bt.updated_at

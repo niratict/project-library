@@ -582,7 +582,7 @@ export default function LibraryReportsDashboard() {
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 shadow-xl shadow-cyan-400">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <Activity className="w-6 h-6 mr-2 text-green-400" />
-                  การจองล่าสุด
+                  กิจกรรมล่าสุด
                 </h3>
                 <div className="space-y-4 max-h-80 overflow-y-auto">
                   {dashboardData.recent_activity
