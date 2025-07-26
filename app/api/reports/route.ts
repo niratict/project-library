@@ -141,11 +141,25 @@ async function GET_OVERDUE(req: NextRequest) {
           DATEDIFF(day, bt.due_date, GETDATE()) as overdue_days,
           s.name as staff_name,
           bc.shelf_location,
-          CASE 
-            WHEN DATEDIFF(day, bt.due_date, GETDATE()) <= 7 THEN 'ใกล้กำหนด'
-            WHEN DATEDIFF(day, bt.due_date, GETDATE()) <= 30 THEN 'เกินกำหนด'
-            ELSE 'เกินกำหนดมาก'
-          END as overdue_level
+    CASE 
+    -- ใกล้กำหนด: เหลือเวลาไม่เกิน 8 ชั่วโมง และยังไม่เกิน due_date
+    WHEN bt.due_date > GETDATE() 
+         AND DATEDIFF(hour, GETDATE(), bt.due_date) <= 8 
+    THEN N'ใกล้กำหนด'
+    
+    -- เกินกำหนด: เลย due_date ไปแล้ว แต่ไม่เกิน 7 วัน
+    WHEN bt.due_date < GETDATE() 
+         AND DATEDIFF(day, bt.due_date, GETDATE()) <= 7 
+    THEN N'เกินกำหนด'
+    
+    -- เกินกำหนดมาก: เกิน due_date ไปมากกว่า 7 วัน
+    WHEN bt.due_date < GETDATE() 
+         AND DATEDIFF(day, bt.due_date, GETDATE()) > 7 
+    THEN N'เกินกำหนดมาก'
+    
+    -- กรณีอื่นๆ (เช่น ยังไม่ถึงเวลาใกล้กำหนด)
+    ELSE N'ปกติ'
+END as overdue_level
         FROM borrow_transactions bt
         INNER JOIN users u ON bt.user_id = u.user_id
         INNER JOIN book_copies bc ON bt.book_copies_id = bc.book_copies_id

@@ -270,10 +270,10 @@ export default function LibraryReportsDashboard() {
         overdue_days: b.overdue_days,
         severity_level:
           b.overdue_level === "เกินกำหนดมาก"
-            ? "high"
+            ? "เกินกำหนดมาก"
             : b.overdue_level === "เกินกำหนด"
-            ? "medium"
-            : "low",
+            ? "เกินกำหนด"
+            : "ใกล้เกินกำหนด",
         staff_name: b.staff_name,
       }))
     );
@@ -698,18 +698,18 @@ export default function LibraryReportsDashboard() {
                         <td className="py-3 px-4">
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              book.severity_level === "high"
+                              book.severity_level === "เกินกำหนดมาก"
                                 ? "bg-red-500/20 text-red-300"
-                                : book.severity_level === "medium"
+                                : book.severity_level === "เกินกำหนด"
                                 ? "bg-yellow-500/20 text-yellow-300"
                                 : "bg-orange-500/20 text-orange-300"
                             }`}
                           >
-                            {book.severity_level === "high"
-                              ? "สูง"
-                              : book.severity_level === "medium"
-                              ? "กลาง"
-                              : "ต่ำ"}
+                            {book.severity_level === "เกินกำหนดมาก"
+                              ? "เกินกำหนดมาก"
+                              : book.severity_level === "เกินกำหนด"
+                              ? "เกินกำหนด"
+                              : "ใกล้เกินกำหนด"}
                           </span>
                         </td>
                       </tr>
